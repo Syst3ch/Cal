@@ -853,15 +853,19 @@
       };
 
       try {
-        await updateDoc(doc(db, 'users', currentUser.uid), {
+        await setDoc(doc(db, 'users', currentUser.uid), {
+          email: currentUser.email || '',
+          planner: getPlannerDataFromForm(),
           weightHistory: arrayUnion(entry),
           updatedAt: serverTimestamp()
-        });
+        }, { merge: true });
+
         weightHistory.push(entry);
         weightHistory.sort((a,b) => (a.date > b.date ? 1 : -1));
         renderWeightHistory();
         showBox('cloudMessage', 'השקילה נוספה ונשמרה בענן.', 'banner');
         document.getElementById('weight').value = weight;
+        document.getElementById('weighNote').value = '';
         calcIfPossible();
         checkAlerts(true);
       } catch (err) {
