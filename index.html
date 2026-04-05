@@ -3,126 +3,456 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Caloria - שקילות, התראות ואבטחה</title>
+  <title>Caloria Pro - מעקב חכם לירידה במשקל</title>
   <style>
     :root {
-      --bg: #f6f7fb;
-      --card: #ffffff;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --accent: #2563eb;
-      --accent-soft: #eff6ff;
-      --danger: #b91c1c;
-      --warn: #92400e;
-      --ok: #166534;
-      --ok-bg: #eefcf4;
-      --warn-bg: #fff7ed;
+      --bg: #f3f6fb;
+      --card: rgba(255,255,255,0.88);
+      --card-solid: #ffffff;
+      --text: #152033;
+      --muted: #667085;
+      --border: #e7ecf3;
+      --accent: #2f6bff;
+      --accent-2: #7c4dff;
+      --accent-soft: #eef4ff;
+      --success: #0f9f6e;
+      --success-soft: #e9fbf3;
+      --warning: #b76e00;
+      --warning-soft: #fff6e8;
+      --danger: #d92d20;
+      --danger-soft: #fff0ef;
+      --shadow: 0 18px 50px rgba(18, 38, 63, 0.08);
+      --radius: 22px;
     }
+
     * { box-sizing: border-box; }
+
     body {
+      font-family: Arial, Helvetica, sans-serif !important;
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
-      background: var(--bg);
       color: var(--text);
       line-height: 1.5;
+      background:
+        radial-gradient(circle at top right, rgba(124,77,255,0.12), transparent 28%),
+        radial-gradient(circle at top left, rgba(47,107,255,0.14), transparent 24%),
+        linear-gradient(180deg, #f7faff 0%, #f3f6fb 100%);
+      min-height: 100vh;
     }
-    .wrap { max-width: 1150px; margin: 24px auto; padding: 16px; }
+
+    .wrap {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 12px;
+      max-width: 1180px;
+      margin: 26px auto 50px;
+      padding: 16px;
+    }
+
     .card {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto 16px auto;
       background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-      padding: 22px;
-      margin-bottom: 16px;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.7);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      margin-bottom: 18px;
     }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 920px) {
+      .hero { grid-template-columns: 1fr; }
+    }
+
+    .hero-main {
+      padding: 4px 0;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(90deg, rgba(47,107,255,0.10), rgba(124,77,255,0.10));
+      border: 1px solid rgba(47,107,255,0.12);
+      color: var(--accent);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
     h1, h2, h3 { margin-top: 0; }
+    h1 {
+      font-size: 36px;
+      line-height: 1.12;
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
     .sub, .small { color: var(--muted); }
     .small { font-size: 13px; }
-    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .user-pill {
+      background: linear-gradient(135deg, rgba(47,107,255,0.12), rgba(124,77,255,0.12));
+      color: #2b4bc8;
+      border: 1px solid rgba(47,107,255,0.16);
+      padding: 9px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+    }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
     .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
-    @media (max-width: 920px) { .grid, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
-    .field { display: flex; flex-direction: column; gap: 6px; }
-    label { font-weight: 700; font-size: 14px; }
+
+    @media (max-width: 920px) {
+      .grid, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    label {
+      font-weight: 700;
+      font-size: 14px;
+      color: #243247;
+    }
+
     input, select {
       width: 100%;
-      padding: 12px 14px;
+      padding: 13px 14px;
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 14px;
       font-size: 16px;
-      background: #fff;
+      background: rgba(255,255,255,0.96);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
     }
-    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+
+    input:focus, select:focus {
+      border-color: rgba(47,107,255,0.5);
+      box-shadow: 0 0 0 4px rgba(47,107,255,0.10);
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
     button {
       border: 0;
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 12px 18px;
-      font-size: 16px;
+      font-size: 15px;
       cursor: pointer;
+      font-weight: 800;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(18, 38, 63, 0.08);
+    }
+
+    .primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+    }
+
+    .secondary {
+      background: #eef3fb;
+      color: var(--text);
+    }
+
+    .ghost {
+      background: white;
+      color: var(--accent);
+      border: 1px solid rgba(47,107,255,0.14);
+    }
+
+    .danger-btn {
+      background: var(--danger-soft);
+      color: #b42318;
+    }
+
+    .result-box {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(47,107,255,0.08);
+      border-radius: 20px;
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(246,249,255,0.98));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+
+    .result-box::after {
+      content: "";
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      opacity: 0.8;
+    }
+
+    .result-title {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 8px;
       font-weight: 700;
     }
-    .primary { background: var(--accent); color: white; }
-    .secondary { background: #eef2f7; color: var(--text); }
-    .ghost { background: white; color: var(--accent); border: 1px solid #c7d2fe; }
-    .danger-btn { background: #fee2e2; color: #991b1b; }
-    .result-box {
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-      background: #fcfcfd;
+
+    .result-value {
+      font-size: 31px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
     }
-    .result-title { color: var(--muted); font-size: 14px; margin-bottom: 8px; }
-    .result-value { font-size: 28px; font-weight: 800; }
+
     .notes, .formula, .warning, .banner {
       margin-top: 16px;
-      padding: 14px 16px;
-      border-radius: 14px;
+      padding: 15px 16px;
+      border-radius: 18px;
       border: 1px solid var(--border);
     }
-    .notes { background: #fafafa; }
-    .formula { background: var(--accent-soft); }
-    .warning { background: var(--warn-bg); border-color: #fed7aa; color: var(--warn); }
-    .banner { background: var(--ok-bg); border-color: #bbf7d0; color: var(--ok); }
+
+    .notes {
+      background: rgba(255,255,255,0.8);
+    }
+
+    .formula {
+      background: linear-gradient(180deg, #f2f7ff, #edf4ff);
+      border-color: #dbe7ff;
+    }
+
+    .warning {
+      background: var(--warning-soft);
+      border-color: #ffd79b;
+      color: var(--warning);
+    }
+
+    .banner {
+      background: var(--success-soft);
+      border-color: #b7ebd2;
+      color: var(--success);
+    }
+
     .danger { color: var(--danger); font-weight: 700; }
-    .ok { color: var(--ok); font-weight: 700; }
+    .ok { color: var(--success); font-weight: 700; }
     .hidden { display: none !important; }
-    ul { margin: 10px 0 0; padding-right: 18px; }
-    .topbar {
-      display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+
+    ul {
+      margin: 10px 0 0;
+      padding-right: 18px;
     }
-    .user-pill {
-      background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; padding: 8px 12px;
-      border-radius: 999px; font-weight: 700;
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      align-content: start;
     }
-    canvas {
-      max-width: 100%; background: white; border-radius: 12px; border: 1px solid #eef2f7;
-      margin-top: 10px; width: 100%; height: 130px;
+
+    .mini-stat {
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(245,248,255,0.95));
+      border: 1px solid rgba(47,107,255,0.08);
+      border-radius: 18px;
+      padding: 16px;
     }
+
+    .mini-stat strong {
+      display: block;
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+
     code.inline {
-      background: #f3f4f6; padding: 2px 6px; border-radius: 6px; font-size: 13px;
-      direction: ltr; display: inline-block;
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 13px;
+      direction: ltr;
+      display: inline-block;
     }
+
     table {
-      width: 100%; border-collapse: collapse; margin-top: 12px; background: white; border-radius: 12px; overflow: hidden;
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
     }
+
     th, td {
-      border-bottom: 1px solid #eef2f7; padding: 10px; text-align: right; font-size: 14px;
+      border-bottom: 1px solid #eef2f7;
+      padding: 12px 10px;
+      text-align: right;
+      font-size: 14px;
     }
-    th { background: #f8fafc; }
-    .pill { display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+
+    th {
+      background: #f8fbff;
+      color: #475467;
+      font-weight: 800;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
     .pill-ok { background: #dcfce7; color: #166534; }
     .pill-warn { background: #ffedd5; color: #9a3412; }
     .pill-neutral { background: #e5e7eb; color: #374151; }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+
+    .section-title .small {
+      margin-top: 2px;
+    }
+
+    canvas {
+      max-width: 100%;
+      background: linear-gradient(180deg, #ffffff, #fbfdff);
+      border-radius: 16px;
+      border: 1px solid #edf2f7;
+      margin-top: 10px;
+      width: 100%;
+      height: 130px;
+    }
+
+    .footer-tip {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: linear-gradient(90deg, rgba(47,107,255,0.08), rgba(124,77,255,0.08));
+      color: #324054;
+      font-size: 14px;
+    }
+  
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    @media (max-width: 920px) {
+      .metric-row { grid-template-columns: 1fr 1fr; }
+    }
+    .metric-chip {
+      border-radius: 18px;
+      padding: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(246,248,253,0.96));
+      border: 1px solid rgba(47,107,255,0.08);
+    }
+    .metric-chip .small {
+      margin-bottom: 6px;
+      display: block;
+    }
+    .metric-chip strong {
+      font-size: 20px;
+      display: block;
+    }
+    .auth-split {
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:16px;
+      align-items:start;
+    }
+    @media (max-width: 920px) {
+      .auth-split { grid-template-columns: 1fr; }
+    }
+    .soft-card {
+      border: 1px solid rgba(47,107,255,0.08);
+      border-radius: 20px;
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,250,255,0.96));
+    }
+    .bottom-nav {
+      position: sticky;
+      bottom: 14px;
+      z-index: 20;
+      display:flex;
+      justify-content:center;
+      margin-top: 20px;
+    }
+    .bottom-nav-inner {
+      display:flex;
+      gap:8px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border:1px solid rgba(255,255,255,0.9);
+      box-shadow: 0 18px 40px rgba(18,38,63,0.10);
+      border-radius: 999px;
+      padding:8px;
+    }
+    .nav-item {
+      padding:10px 14px;
+      border-radius:999px;
+      font-size:14px;
+      font-weight:800;
+      color:#475467;
+      background:transparent;
+    }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(47,107,255,0.12), rgba(124,77,255,0.12));
+      color:#2f6bff;
+    }
+    .section-anchor {
+      scroll-margin-top: 18px;
+    }
+
+    body, button, input, select, textarea, table, th, td, div, span, h1, h2, h3, h4, h5, h6, p, a, label {
+      font-family: Arial, Helvetica, sans-serif !important;
+    }
   </style>
 </head>
-<body>
+<body id="top">
   <div class="wrap">
     <div class="card">
       <div class="topbar">
         <div>
-          <h1>Caloria - מעקב ירידה במשקל</h1>
-          <div class="sub">לוגין, שמירה בענן, היסטוריית שקילות, ותזכורות בתוך האפליקציה ובדפדפן.</div>
+          <h1 style="margin-bottom:6px; font-size:34px;">Caloria</h1>
+          <div class="sub">מעקב ירידה במשקל</div>
         </div>
         <div id="userPill" class="user-pill hidden"></div>
       </div>
@@ -130,25 +460,27 @@
       <div id="configWarning" class="warning hidden">
         <strong>צריך לחבר Firebase לפני שהלוגין והשמירה בענן יעבדו.</strong>
       </div>
-</div>
+
+      
+      </div>
     </div>
 
-    <div id="authCard" class="card">
-      <div class="grid">
-        <div>
+    <div id="authCard" class="card section-anchor">
+      <div class="auth-split">
+        <div class="soft-card">
           <h2>הרשמה</h2>
           <div class="grid">
             <div class="field">
               <label for="firstName">שם פרטי</label>
-              <input id="firstName" type="text" />
+              <input id="firstName" type="text" placeholder="דוד" />
             </div>
             <div class="field">
               <label for="lastName">שם משפחה</label>
-              <input id="lastName" type="text" />
+              <input id="lastName" type="text" placeholder="כהן" />
             </div>
             <div class="field">
               <label for="registerEmail">אימייל</label>
-              <input id="registerEmail" type="email" />
+              <input id="registerEmail" type="email" placeholder="name@example.com" />
             </div>
             <div class="field">
               <label for="registerPassword">סיסמה</label>
@@ -160,12 +492,12 @@
           </div>
         </div>
 
-        <div>
+        <div class="soft-card">
           <h2>התחברות</h2>
           <div class="grid">
             <div class="field">
               <label for="loginEmail">אימייל</label>
-              <input id="loginEmail" type="email" />
+              <input id="loginEmail" type="email" placeholder="name@example.com" />
             </div>
             <div class="field">
               <label for="loginPassword">סיסמה</label>
@@ -184,8 +516,8 @@
       <div id="authMessage" class="notes hidden"></div>
     </div>
 
-    <div id="appCard" class="card hidden">
-      <div class="topbar">
+    <div id="appCard" class="card hidden section-anchor">
+      <div class="section-title">
         <h2 style="margin-bottom:0;">האזור האישי שלך</h2>
         <div class="actions" style="margin-top:0;">
           <button class="secondary" id="cloudSaveBtn">שמור לענן</button>
@@ -197,6 +529,23 @@
 
       <div id="cloudMessage" class="banner hidden"></div>
       <div id="appAlerts" class="notes hidden"></div>
+
+      <div class="metric-chip">
+          <span class="small">מעקב</span>
+          <strong>שקילה מהירה</strong>
+          
+        </div>
+        <div class="metric-chip">
+          <span class="small">מוטיבציה</span>
+          <strong>מגמת ירידה</strong>
+          
+        </div>
+        <div class="metric-chip">
+          <span class="small">התראות</span>
+          <strong>זמן לפעול</strong>
+          
+        </div>
+      </div>
 
       <div class="grid">
         <div class="field">
@@ -239,7 +588,7 @@
         <div class="field">
           <label for="calPerKg">קלוריות לכל ק"ג ירידה</label>
           <input id="calPerKg" type="number" min="5000" max="12000" step="100" value="7700" />
-          <div class="small">ברירת המחדל היא 7700 לק"ג כאומדן פשטני.</div>
+          
         </div>
       </div>
 
@@ -253,17 +602,17 @@
           <div class="result-box">
             <div class="result-title">BMR משוער</div>
             <div class="result-value" id="bmrOut">-</div>
-            <div class="small">קלוריות ליום במנוחה</div>
+            
           </div>
           <div class="result-box">
             <div class="result-title">TDEE משוער</div>
             <div class="result-value" id="tdeeOut">-</div>
-            <div class="small">קלוריות ליום לפי הפעילות שנבחרה</div>
+            
           </div>
           <div class="result-box">
             <div class="result-title">יעד קלורי יומי</div>
             <div class="result-value" id="targetOut">-</div>
-            <div class="small">לפי היעד והתאריך</div>
+            
           </div>
         </div>
 
@@ -271,18 +620,15 @@
         <div class="notes" id="notesBox"></div>
         <div class="warning hidden" id="warningBox"></div>
 
-        <div class="notes">
-          <strong>גרף ירידה משוער:</strong>
-          <canvas id="progressChart"></canvas>
-        </div>
+        
       </div>
     </div>
 
-    <div id="historyCard" class="card hidden">
-      <div class="topbar">
+    <div id="historyCard" class="card hidden section-anchor">
+      <div class="section-title">
         <div>
           <h2>היסטוריית שקילות</h2>
-          <div class="small">השקילות נשמרות בענן אצל המשתמש שלך בלבד.</div>
+          
         </div>
       </div>
 
@@ -305,9 +651,7 @@
         </div>
       </div>
 
-      <div class="notes">
-        <strong>סיכום שקילות:</strong>
-        <div id="historySummary" class="small" style="margin-top:8px;">עדיין אין שקילות.</div>
+      
       </div>
 
       <div style="overflow:auto;">
@@ -327,9 +671,13 @@
         </table>
       </div>
 
-      <div class="notes">
-        <strong>גרף היסטוריית שקילות:</strong>
-        <canvas id="historyChart"></canvas>
+      
+        <div class="bottom-nav">
+      <div class="bottom-nav-inner">
+        <a class="nav-item active" href="#top">🏠 בית</a>
+        <a class="nav-item" href="#authCard">🔐 חשבון</a>
+        <a class="nav-item" href="#appCard">🎯 יעד</a>
+        <a class="nav-item" href="#historyCard">⚖️ שקילות</a>
       </div>
     </div>
   </div>
@@ -775,6 +1123,7 @@
         applyPlannerDataToForm(data.planner || {});
         weightHistory = (data.weightHistory || []).sort((a,b) => (a.date > b.date ? 1 : -1));
         renderWeightHistory();
+        calcIfPossible();
         showBox('cloudMessage', 'הנתונים נטענו מהענן.', 'banner');
         checkAlerts();
       } catch (err) {
@@ -790,7 +1139,14 @@
         userProfile = data;
         weightHistory = (data.weightHistory || []).sort((a,b) => (a.date > b.date ? 1 : -1));
         setLoggedInUI(data);
-        if (data.planner) applyPlannerDataToForm(data.planner);
+        if (data.planner) {
+          applyPlannerDataToForm(data.planner);
+          setTimeout(() => {
+            calcIfPossible();
+          }, 50);
+        } else {
+          document.getElementById('output').classList.add('hidden');
+        }
         renderWeightHistory();
         checkAlerts();
       } catch (err) {
