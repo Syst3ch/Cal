@@ -28,6 +28,7 @@
     * { box-sizing: border-box; }
 
     body {
+      font-family: Arial, Helvetica, sans-serif !important;
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
       color: var(--text);
@@ -433,57 +434,19 @@
     .section-anchor {
       scroll-margin-top: 18px;
     }
-</style>
+
+    body, button, input, select, textarea, table, th, td, div, span, h1, h2, h3, h4, h5, h6, p, a, label {
+      font-family: Arial, Helvetica, sans-serif !important;
+    }
+  </style>
 </head>
 <body id="top">
   <div class="wrap">
-    <div class="card" style="padding:16px 18px; margin-bottom:14px;">
-      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;">
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <span class="pill pill-neutral" style="background:#eef4ff; color:#2f6bff;">🏠 דף בית</span>
-          <span class="pill pill-neutral" style="background:#f5f3ff; color:#7c4dff;">📈 התקדמות</span>
-          <span class="pill pill-neutral" style="background:#ecfdf3; color:#0f9f6e;">⚖️ שקילות</span>
-          <span class="pill pill-neutral" style="background:#fff7ed; color:#b76e00;">🔔 תזכורות</span>
-        </div>
-        
-      </div>
-    </div>
     <div class="card">
-      <div class="hero">
-        <div class="hero-main">
-          <div class="hero-badge">Caloria Pro • Dashboard</div>
-          <h1>מעקב חכם, ברור ויפה יותר לירידה במשקל</h1>
-          <div class="sub">עיצוב חדש עם דגש על מסך בית ברור, כרטיסי KPI, התקדמות מהירה, ושפה ויזואלית נקייה בסגנון אפליקציות מעקב בריאות מודרניות.</div>
-          <div class="footer-tip">המסך הראשי עוצב כך שהמספרים החשובים יהיו מול העיניים מיד, בדומה לגישת "Today" ו-"Progress" שמודגשת באפליקציות מובילות.</div>
-        </div>
-        <div class="hero-stats">
-          <div class="mini-stat">
-            
-            <strong>Today</strong>
-            
-          </div>
-          <div class="mini-stat">
-            
-            <strong>Progress</strong>
-            
-          </div>
-          <div class="mini-stat">
-            
-            <strong>Quick add</strong>
-            
-          </div>
-          <div class="mini-stat">
-            
-            <strong>Secure</strong>
-            
-          </div>
-        </div>
-      </div>
-
-      <div class="topbar" style="margin-top:18px;">
+      <div class="topbar">
         <div>
-          <h2 style="margin-bottom:6px;">Caloria - מעקב ירידה במשקל</h2>
-          <div class="sub">לוגין, שמירה בענן, היסטוריית שקילות, ותזכורות בתוך האפליקציה ובדפדפן.</div>
+          <h1 style="margin-bottom:6px; font-size:34px;">Caloria</h1>
+          <div class="sub">מעקב ירידה במשקל</div>
         </div>
         <div id="userPill" class="user-pill hidden"></div>
       </div>
@@ -561,13 +524,7 @@
       <div id="cloudMessage" class="banner hidden"></div>
       <div id="appAlerts" class="notes hidden"></div>
 
-      <div class="metric-row">
-        <div class="metric-chip">
-          <span class="small">מיקוד</span>
-          <strong>יעד יומי</strong>
-          
-        </div>
-        <div class="metric-chip">
+      <div class="metric-chip">
           <span class="small">מעקב</span>
           <strong>שקילה מהירה</strong>
           
