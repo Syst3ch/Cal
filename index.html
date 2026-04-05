@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>מחשבון יעד קלורי - ענן ולוגין</title>
+  <title>Caloria - שקילות, התראות ואבטחה</title>
   <style>
     :root {
       --bg: #f6f7fb;
@@ -16,6 +16,8 @@
       --danger: #b91c1c;
       --warn: #92400e;
       --ok: #166534;
+      --ok-bg: #eefcf4;
+      --warn-bg: #fff7ed;
     }
     * { box-sizing: border-box; }
     body {
@@ -25,11 +27,7 @@
       color: var(--text);
       line-height: 1.5;
     }
-    .wrap {
-      max-width: 1100px;
-      margin: 24px auto;
-      padding: 16px;
-    }
+    .wrap { max-width: 1150px; margin: 24px auto; padding: 16px; }
     .card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -41,24 +39,11 @@
     h1, h2, h3 { margin-top: 0; }
     .sub, .small { color: var(--muted); }
     .small { font-size: 13px; }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-    }
-    @media (max-width: 820px) {
-      .grid, .grid-3 { grid-template-columns: 1fr; }
-    }
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    @media (max-width: 920px) { .grid, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+    .field { display: flex; flex-direction: column; gap: 6px; }
     label { font-weight: 700; font-size: 14px; }
     input, select {
       width: 100%;
@@ -68,12 +53,7 @@
       font-size: 16px;
       background: #fff;
     }
-    .actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 16px;
-    }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
     button {
       border: 0;
       border-radius: 12px;
@@ -85,6 +65,7 @@
     .primary { background: var(--accent); color: white; }
     .secondary { background: #eef2f7; color: var(--text); }
     .ghost { background: white; color: var(--accent); border: 1px solid #c7d2fe; }
+    .danger-btn { background: #fee2e2; color: #991b1b; }
     .result-box {
       border: 1px solid var(--border);
       border-radius: 16px;
@@ -101,53 +82,38 @@
     }
     .notes { background: #fafafa; }
     .formula { background: var(--accent-soft); }
-    .warning {
-      background: #fff7ed;
-      border-color: #fed7aa;
-      color: var(--warn);
-    }
-    .banner {
-      background: #eefcf4;
-      border-color: #bbf7d0;
-      color: var(--ok);
-    }
+    .warning { background: var(--warn-bg); border-color: #fed7aa; color: var(--warn); }
+    .banner { background: var(--ok-bg); border-color: #bbf7d0; color: var(--ok); }
     .danger { color: var(--danger); font-weight: 700; }
     .ok { color: var(--ok); font-weight: 700; }
     .hidden { display: none !important; }
-    ul {
-      margin: 10px 0 0;
-      padding-right: 18px;
-    }
+    ul { margin: 10px 0 0; padding-right: 18px; }
     .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
+      display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
     }
     .user-pill {
-      background: #eef2ff;
-      color: #3730a3;
-      border: 1px solid #c7d2fe;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-weight: 700;
+      background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; padding: 8px 12px;
+      border-radius: 999px; font-weight: 700;
     }
     canvas {
-      max-width: 100%;
-      background: white;
-      border-radius: 12px;
-      border: 1px solid #eef2f7;
-      margin-top: 10px;
-      width: 100%;
-      height: 130px;
+      max-width: 100%; background: white; border-radius: 12px; border: 1px solid #eef2f7;
+      margin-top: 10px; width: 100%; height: 130px;
     }
     code.inline {
-      background: #f3f4f6;
-      padding: 2px 6px;
-      border-radius: 6px;
-      font-size: 13px;
+      background: #f3f4f6; padding: 2px 6px; border-radius: 6px; font-size: 13px;
+      direction: ltr; display: inline-block;
     }
+    table {
+      width: 100%; border-collapse: collapse; margin-top: 12px; background: white; border-radius: 12px; overflow: hidden;
+    }
+    th, td {
+      border-bottom: 1px solid #eef2f7; padding: 10px; text-align: right; font-size: 14px;
+    }
+    th { background: #f8fafc; }
+    .pill { display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .pill-ok { background: #dcfce7; color: #166534; }
+    .pill-warn { background: #ffedd5; color: #9a3412; }
+    .pill-neutral { background: #e5e7eb; color: #374151; }
   </style>
 </head>
 <body>
@@ -155,16 +121,20 @@
     <div class="card">
       <div class="topbar">
         <div>
-          <h1>מחשבון יעד קלורי עם לוגין ושמירה בענן</h1>
-          <div class="sub">הרשמה והתחברות עם שם פרטי, שם משפחה, אימייל וסיסמה. הנתונים נשמרים בענן לכל משתמש.</div>
+          <h1>Caloria - מעקב ירידה במשקל</h1>
+          <div class="sub">לוגין, שמירה בענן, היסטוריית שקילות, ותזכורות בתוך האפליקציה ובדפדפן.</div>
         </div>
         <div id="userPill" class="user-pill hidden"></div>
       </div>
 
-      <div id="configWarning" class="warning">
+      <div id="configWarning" class="warning hidden">
         <strong>צריך לחבר Firebase לפני שהלוגין והשמירה בענן יעבדו.</strong>
+      </div>
+
+      <div class="notes">
+        <strong>חשוב לגבי אבטחה:</strong>
         <div class="small" style="margin-top:8px;">
-          בתוך הקובץ חפש את המשתנה <code class="inline">firebaseConfig</code> והדבק שם את הערכים שתקבל מ-Firebase Console.
+          בקובץ Frontend של Firebase אי אפשר להסתיר באמת את <code class="inline">firebaseConfig</code>. Firebase מסבירים שה-API key של Firebase לא נחשב סוד, וההגנה האמיתית היא דרך Authentication, Firestore Security Rules ו-App Check. לכן האבטחה פה נעשית עם חוקים שחוסמים גישה לנתונים של משתמשים אחרים. 
         </div>
       </div>
     </div>
@@ -213,11 +183,10 @@
             <button class="ghost" id="resetPasswordBtn">איפוס סיסמה</button>
           </div>
           <div class="small" style="margin-top:8px;">
-            לוגין מאובטח לא יכול להישען רק על שם ושם משפחה, לכן הם נשמרים כפרטי פרופיל וההזדהות נעשית עם אימייל וסיסמה.
+            שם פרטי ושם משפחה נשמרים בפרופיל. ההזדהות עצמה מתבצעת עם אימייל וסיסמה.
           </div>
         </div>
       </div>
-
       <div id="authMessage" class="notes hidden"></div>
     </div>
 
@@ -227,16 +196,19 @@
         <div class="actions" style="margin-top:0;">
           <button class="secondary" id="cloudSaveBtn">שמור לענן</button>
           <button class="secondary" id="cloudLoadBtn">טען מהענן</button>
+          <button class="ghost" id="enableNotificationsBtn">אפשר התראות</button>
           <button class="ghost" id="logoutBtn">התנתק</button>
         </div>
       </div>
+
+      <div id="cloudMessage" class="banner hidden"></div>
+      <div id="appAlerts" class="notes hidden"></div>
 
       <div class="grid">
         <div class="field">
           <label for="age">גיל</label>
           <input id="age" type="number" min="10" max="100" placeholder="למשל 35" />
         </div>
-
         <div class="field">
           <label for="gender">מגדר</label>
           <select id="gender">
@@ -244,27 +216,22 @@
             <option value="female">אישה</option>
           </select>
         </div>
-
         <div class="field">
           <label for="height">גובה בס"מ</label>
           <input id="height" type="number" min="100" max="250" placeholder="למשל 178" />
         </div>
-
         <div class="field">
           <label for="weight">משקל נוכחי בק"ג</label>
           <input id="weight" type="number" min="30" max="300" step="0.1" placeholder="למשל 92.5" />
         </div>
-
         <div class="field">
           <label for="goalWeight">משקל מטרה בק"ג</label>
           <input id="goalWeight" type="number" min="30" max="300" step="0.1" placeholder="למשל 80" />
         </div>
-
         <div class="field">
           <label for="targetDate">תאריך יעד</label>
           <input id="targetDate" type="date" />
         </div>
-
         <div class="field">
           <label for="activity">רמת פעילות</label>
           <select id="activity">
@@ -275,7 +242,6 @@
             <option value="1.9">פעילות גבוהה מאוד - עבודה פיזית או אימון כפול</option>
           </select>
         </div>
-
         <div class="field">
           <label for="calPerKg">קלוריות לכל ק"ג ירידה</label>
           <input id="calPerKg" type="number" min="5000" max="12000" step="100" value="7700" />
@@ -287,8 +253,6 @@
         <button class="primary" id="calcBtn">חשב</button>
         <button class="secondary" id="resetBtn" type="button">נקה</button>
       </div>
-
-      <div id="cloudMessage" class="banner hidden"></div>
 
       <div id="output" class="hidden">
         <div class="grid-3" style="margin-top:20px;">
@@ -319,6 +283,61 @@
         </div>
       </div>
     </div>
+
+    <div id="historyCard" class="card hidden">
+      <div class="topbar">
+        <div>
+          <h2>היסטוריית שקילות</h2>
+          <div class="small">השקילות נשמרות בענן אצל המשתמש שלך בלבד.</div>
+        </div>
+      </div>
+
+      <div class="grid-4">
+        <div class="field">
+          <label for="weighDate">תאריך שקילה</label>
+          <input id="weighDate" type="date" />
+        </div>
+        <div class="field">
+          <label for="weighWeight">משקל בק"ג</label>
+          <input id="weighWeight" type="number" min="30" max="300" step="0.1" />
+        </div>
+        <div class="field">
+          <label for="weighNote">הערה</label>
+          <input id="weighNote" type="text" placeholder="למשל אחרי שבת / אחרי אימון" />
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <button class="primary" id="addWeighBtn">הוסף שקילה</button>
+        </div>
+      </div>
+
+      <div class="notes">
+        <strong>סיכום שקילות:</strong>
+        <div id="historySummary" class="small" style="margin-top:8px;">עדיין אין שקילות.</div>
+      </div>
+
+      <div style="overflow:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>תאריך</th>
+              <th>משקל</th>
+              <th>שינוי משקילה קודמת</th>
+              <th>הערה</th>
+              <th>מחיקה</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <tr><td colspan="5" class="small">עדיין אין נתונים.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="notes">
+        <strong>גרף היסטוריית שקילות:</strong>
+        <canvas id="historyChart"></canvas>
+      </div>
+    </div>
   </div>
 
   <script type="module">
@@ -336,32 +355,56 @@
       doc,
       setDoc,
       getDoc,
-      serverTimestamp
+      updateDoc,
+      serverTimestamp,
+      arrayUnion,
+      arrayRemove
     } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js';
+    import {
+      initializeAppCheck,
+      ReCaptchaV3Provider
+    } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-app-check.js';
 
     const firebaseConfig = {
-    apiKey: "AIzaSyDEkd9GegQj_28cIteuigXkkAZwDTqcF_s",
-    authDomain: "caloria1994.firebaseapp.com",
-    projectId: "caloria1994",
-    storageBucket: "caloria1994.firebasestorage.app",
-    messagingSenderId: "362377290061",
-    appId: "1:362377290061:web:aea8928c51237387839704"
+      apiKey: "AIzaSyDEkd9GegQj_28cIteuigXkkAZwDTqcF_s",
+      authDomain: "caloria1994.firebaseapp.com",
+      projectId: "caloria1994",
+      storageBucket: "caloria1994.firebasestorage.app",
+      messagingSenderId: "362377290061",
+      appId: "1:362377290061:web:aea8928c51237387839704"
     };
 
+    const recaptchaSiteKey = "PUT_YOUR_RECAPTCHA_V3_SITE_KEY_HERE";
+
     const hasRealFirebaseConfig =
-      firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('PUT_YOUR') &&
-      firebaseConfig.projectId && !firebaseConfig.projectId.includes('PUT_YOUR');
+      firebaseConfig.apiKey &&
+      firebaseConfig.projectId &&
+      firebaseConfig.projectId.length > 0;
 
     let app = null;
     let auth = null;
     let db = null;
     let currentUser = null;
+    let userProfile = null;
+    let weightHistory = [];
 
     if (hasRealFirebaseConfig) {
       app = initializeApp(firebaseConfig);
       auth = getAuth(app);
       db = getFirestore(app);
-      document.getElementById('configWarning').classList.add('hidden');
+
+      if (recaptchaSiteKey && !recaptchaSiteKey.includes('PUT_YOUR')) {
+        try {
+          initializeAppCheck(app, {
+            provider: new ReCaptchaV3Provider(recaptchaSiteKey),
+            isTokenAutoRefreshEnabled: true
+          });
+        } catch (e) {
+          console.warn('App Check not initialized', e);
+        }
+      }
+    } else {
+      document.getElementById('configWarning').classList.remove('hidden');
     }
 
     function showBox(id, message, type = 'notes') {
@@ -386,15 +429,20 @@
       el.classList.remove('hidden');
     }
 
-    function formatNumber(num) {
-      return Math.round(num).toLocaleString('he-IL');
-    }
+    function formatNumber(num) { return Math.round(num).toLocaleString('he-IL'); }
 
     function daysBetween(today, future) {
       const a = new Date(today);
       const b = new Date(future);
       const ms = b.setHours(0,0,0,0) - a.setHours(0,0,0,0);
       return Math.ceil(ms / (1000 * 60 * 60 * 24));
+    }
+
+    function formatDateValue(val) {
+      if (!val) return '';
+      const d = new Date(val);
+      if (Number.isNaN(d.getTime())) return val;
+      return d.toLocaleDateString('he-IL');
     }
 
     function calculateBMR({ gender, weight, height, age }) {
@@ -428,9 +476,7 @@
     function applyPlannerDataToForm(data = {}) {
       const ids = ['age','gender','height','weight','goalWeight','targetDate','activity','calPerKg'];
       ids.forEach((id) => {
-        if (data[id] !== undefined && data[id] !== null) {
-          document.getElementById(id).value = data[id];
-        }
+        if (data[id] !== undefined && data[id] !== null) document.getElementById(id).value = data[id];
       });
     }
 
@@ -449,10 +495,9 @@
       hideBox('warningBox');
     }
 
-    function renderChart(currentWeight, goalWeight, days) {
-      const canvas = document.getElementById('progressChart');
+    function renderLineChart(canvasId, values, labels, startLabel, endLabel) {
+      const canvas = document.getElementById(canvasId);
       const ctx = canvas.getContext('2d');
-
       const cssWidth = canvas.clientWidth || 700;
       const cssHeight = 130;
       canvas.width = cssWidth * 2;
@@ -462,15 +507,11 @@
       const pad = 28;
       ctx.clearRect(0, 0, cssWidth, cssHeight);
 
-      const points = Math.min(12, Math.max(2, Math.ceil(days / 7)));
-      const values = [];
-      for (let i = 0; i <= points; i++) {
-        const ratio = i / points;
-        values.push(currentWeight - ((currentWeight - goalWeight) * ratio));
-      }
+      if (!values || values.length === 0) return;
 
       const minV = Math.min(...values) - 1;
       const maxV = Math.max(...values) + 1;
+      const points = Math.max(1, values.length - 1);
 
       ctx.strokeStyle = '#d1d5db';
       ctx.lineWidth = 1;
@@ -484,9 +525,10 @@
       ctx.strokeStyle = '#2563eb';
       ctx.lineWidth = 2;
       ctx.beginPath();
+
       values.forEach((v, i) => {
         const x = pad + (i * ((cssWidth - pad * 2) / points));
-        const y = (cssHeight - pad) - ((v - minV) / (maxV - minV)) * (cssHeight - pad * 1.5);
+        const y = (cssHeight - pad) - ((v - minV) / (maxV - minV || 1)) * (cssHeight - pad * 1.5);
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       });
@@ -496,12 +538,31 @@
       ctx.font = '12px Arial';
       values.forEach((v, i) => {
         const x = pad + (i * ((cssWidth - pad * 2) / points));
-        const y = (cssHeight - pad) - ((v - minV) / (maxV - minV)) * (cssHeight - pad * 1.5);
+        const y = (cssHeight - pad) - ((v - minV) / (maxV - minV || 1)) * (cssHeight - pad * 1.5);
         ctx.beginPath();
         ctx.arc(x, y, 2.7, 0, Math.PI * 2);
         ctx.fill();
-        if (i === 0 || i === points) ctx.fillText(v.toFixed(1) + ' ק"ג', x - 16, y - 8);
+        if (i === 0 || i === values.length - 1) {
+          const lbl = labels?.[i] || '';
+          ctx.fillText(v.toFixed(1) + ' ק"ג', x - 18, y - 8);
+          if (lbl) ctx.fillText(lbl, x - 18, cssHeight - 8);
+        }
       });
+
+      if (startLabel) ctx.fillText(startLabel, pad, cssHeight - 8);
+      if (endLabel) ctx.fillText(endLabel, cssWidth - pad - 40, cssHeight - 8);
+    }
+
+    function renderProjectionChart(currentWeight, goalWeight, days) {
+      const points = Math.min(12, Math.max(2, Math.ceil(days / 7)));
+      const values = [];
+      const labels = [];
+      for (let i = 0; i <= points; i++) {
+        const ratio = i / points;
+        values.push(currentWeight - ((currentWeight - goalWeight) * ratio));
+        labels.push(i === 0 ? 'היום' : `שלב ${i}`);
+      }
+      renderLineChart('progressChart', values, labels, 'התחלה', 'יעד');
     }
 
     function calc() {
@@ -596,7 +657,7 @@
         </ul>
       `;
 
-      renderChart(weight, goalWeight, days);
+      renderProjectionChart(weight, goalWeight, days);
 
       if (statusText) {
         warningBox.innerHTML = statusText;
@@ -604,6 +665,7 @@
       }
 
       output.classList.remove('hidden');
+      checkAlerts();
     }
 
     async function registerUser() {
@@ -611,7 +673,6 @@
         showBox('authMessage', 'קודם צריך להדביק את הגדרות Firebase בתוך הקובץ.', 'warning');
         return;
       }
-
       const firstName = document.getElementById('firstName').value.trim();
       const lastName = document.getElementById('lastName').value.trim();
       const email = document.getElementById('registerEmail').value.trim();
@@ -629,9 +690,12 @@
           lastName,
           email,
           createdAt: serverTimestamp(),
-          planner: {}
+          planner: {},
+          weightHistory: []
         }, { merge: true });
+
         showBox('authMessage', 'המשתמש נוצר בהצלחה.', 'banner');
+        await goToAppNow(cred.user);
       } catch (err) {
         showBox('authMessage', 'שגיאה בהרשמה: ' + err.message, 'warning');
       }
@@ -652,8 +716,9 @@
       }
 
       try {
-        await signInWithEmailAndPassword(auth, email, password);
+        const cred = await signInWithEmailAndPassword(auth, email, password);
         showBox('authMessage', 'התחברת בהצלחה.', 'banner');
+        await goToAppNow(cred.user);
       } catch (err) {
         showBox('authMessage', 'שגיאה בהתחברות: ' + err.message, 'warning');
       }
@@ -694,6 +759,7 @@
           updatedAt: serverTimestamp()
         }, { merge: true });
         showBox('cloudMessage', 'הנתונים נשמרו לענן.', 'banner');
+        checkAlerts();
       } catch (err) {
         showBox('cloudMessage', 'שגיאה בשמירה לענן: ' + err.message, 'warning');
       }
@@ -711,25 +777,237 @@
           return;
         }
         const data = snap.data();
+        userProfile = data;
         applyPlannerDataToForm(data.planner || {});
+        weightHistory = (data.weightHistory || []).sort((a,b) => (a.date > b.date ? 1 : -1));
+        renderWeightHistory();
         showBox('cloudMessage', 'הנתונים נטענו מהענן.', 'banner');
+        checkAlerts();
       } catch (err) {
         showBox('cloudMessage', 'שגיאה בטעינה מהענן: ' + err.message, 'warning');
+      }
+    }
+
+    async function goToAppNow(user) {
+      currentUser = user;
+      try {
+        const snap = await getDoc(doc(db, 'users', user.uid));
+        const data = snap.exists() ? snap.data() : {};
+        userProfile = data;
+        weightHistory = (data.weightHistory || []).sort((a,b) => (a.date > b.date ? 1 : -1));
+        setLoggedInUI(data);
+        if (data.planner) applyPlannerDataToForm(data.planner);
+        renderWeightHistory();
+        checkAlerts();
+      } catch (err) {
+        setLoggedInUI();
+        showBox('cloudMessage', 'התחברת, אבל לא הצלחתי לקרוא את הנתונים מהענן: ' + err.message, 'warning');
       }
     }
 
     function setLoggedInUI(profile = null) {
       document.getElementById('authCard').classList.add('hidden');
       document.getElementById('appCard').classList.remove('hidden');
+      document.getElementById('historyCard').classList.remove('hidden');
       const fullName = profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : currentUser.email;
       setUserPill(fullName || currentUser.email);
+      document.getElementById('weighDate').value = new Date().toISOString().slice(0,10);
+      if (!document.getElementById('weighWeight').value && document.getElementById('weight').value) {
+        document.getElementById('weighWeight').value = document.getElementById('weight').value;
+      }
     }
 
     function setLoggedOutUI() {
       document.getElementById('authCard').classList.remove('hidden');
       document.getElementById('appCard').classList.add('hidden');
+      document.getElementById('historyCard').classList.add('hidden');
       setUserPill('');
       hideBox('cloudMessage');
+      hideBox('appAlerts');
+      weightHistory = [];
+      userProfile = null;
+      document.getElementById('historyTableBody').innerHTML = '<tr><td colspan="5" class="small">עדיין אין נתונים.</td></tr>';
+      document.getElementById('historySummary').textContent = 'עדיין אין שקילות.';
+    }
+
+    async function addWeighIn() {
+      if (!db || !currentUser) {
+        showBox('cloudMessage', 'צריך להתחבר כדי להוסיף שקילה.', 'warning');
+        return;
+      }
+
+      const date = document.getElementById('weighDate').value;
+      const weight = Number(document.getElementById('weighWeight').value);
+      const note = document.getElementById('weighNote').value.trim();
+
+      if (!date || !weight) {
+        showBox('cloudMessage', 'צריך למלא תאריך ומשקל.', 'warning');
+        return;
+      }
+
+      const entry = {
+        id: `${date}_${weight}_${Date.now()}`,
+        date,
+        weight,
+        note
+      };
+
+      try {
+        await updateDoc(doc(db, 'users', currentUser.uid), {
+          weightHistory: arrayUnion(entry),
+          updatedAt: serverTimestamp()
+        });
+        weightHistory.push(entry);
+        weightHistory.sort((a,b) => (a.date > b.date ? 1 : -1));
+        renderWeightHistory();
+        showBox('cloudMessage', 'השקילה נוספה ונשמרה בענן.', 'banner');
+        document.getElementById('weight').value = weight;
+        calcIfPossible();
+        checkAlerts(true);
+      } catch (err) {
+        showBox('cloudMessage', 'שגיאה בהוספת שקילה: ' + err.message, 'warning');
+      }
+    }
+
+    async function deleteWeighIn(entryId) {
+      const entry = weightHistory.find(x => x.id === entryId);
+      if (!entry || !db || !currentUser) return;
+      try {
+        await updateDoc(doc(db, 'users', currentUser.uid), {
+          weightHistory: arrayRemove(entry),
+          updatedAt: serverTimestamp()
+        });
+        weightHistory = weightHistory.filter(x => x.id !== entryId);
+        renderWeightHistory();
+        showBox('cloudMessage', 'השקילה נמחקה.', 'banner');
+      } catch (err) {
+        showBox('cloudMessage', 'שגיאה במחיקת שקילה: ' + err.message, 'warning');
+      }
+    }
+
+    function renderWeightHistory() {
+      const body = document.getElementById('historyTableBody');
+      const summary = document.getElementById('historySummary');
+
+      if (!weightHistory.length) {
+        body.innerHTML = '<tr><td colspan="5" class="small">עדיין אין נתונים.</td></tr>';
+        summary.textContent = 'עדיין אין שקילות.';
+        renderLineChart('historyChart', [0], [''], '', '');
+        return;
+      }
+
+      let rows = '';
+      let prev = null;
+      weightHistory.forEach((entry) => {
+        let diffText = '<span class="pill pill-neutral">ראשון</span>';
+        if (prev) {
+          const diff = +(entry.weight - prev.weight).toFixed(1);
+          if (diff < 0) diffText = `<span class="pill pill-ok">${diff} ק"ג</span>`;
+          else if (diff > 0) diffText = `<span class="pill pill-warn">+${diff} ק"ג</span>`;
+          else diffText = `<span class="pill pill-neutral">0</span>`;
+        }
+        rows += `
+          <tr>
+            <td>${formatDateValue(entry.date)}</td>
+            <td>${entry.weight.toFixed(1)} ק"ג</td>
+            <td>${diffText}</td>
+            <td>${entry.note || '-'}</td>
+            <td><button class="danger-btn" data-delete-id="${entry.id}">מחק</button></td>
+          </tr>
+        `;
+        prev = entry;
+      });
+      body.innerHTML = rows;
+
+      const first = weightHistory[0];
+      const last = weightHistory[weightHistory.length - 1];
+      const totalDiff = +(last.weight - first.weight).toFixed(1);
+      const summaryText = `יש ${weightHistory.length} שקילות. השקילה הראשונה: ${first.weight.toFixed(1)} ק"ג בתאריך ${formatDateValue(first.date)}. השקילה האחרונה: ${last.weight.toFixed(1)} ק"ג בתאריך ${formatDateValue(last.date)}. שינוי כולל: ${totalDiff > 0 ? '+' : ''}${totalDiff} ק"ג.`;
+      summary.textContent = summaryText;
+
+      renderLineChart(
+        'historyChart',
+        weightHistory.map(x => x.weight),
+        weightHistory.map(x => formatDateValue(x.date)),
+        formatDateValue(first.date),
+        formatDateValue(last.date)
+      );
+
+      [...document.querySelectorAll('[data-delete-id]')].forEach((btn) => {
+        btn.addEventListener('click', () => deleteWeighIn(btn.getAttribute('data-delete-id')));
+      });
+    }
+
+    function calcIfPossible() {
+      const required = ['age','height','weight','goalWeight','targetDate','calPerKg'];
+      const ok = required.every(id => document.getElementById(id).value);
+      if (ok) calc();
+    }
+
+    async function enableNotifications() {
+      if (!('Notification' in window)) {
+        showBox('cloudMessage', 'הדפדפן הזה לא תומך בהתראות.', 'warning');
+        return;
+      }
+      const result = await Notification.requestPermission();
+      if (result === 'granted') {
+        showBox('cloudMessage', 'התראות הופעלו בדפדפן.', 'banner');
+        new Notification('Caloria', { body: 'התראות הופעלו בהצלחה.' });
+        checkAlerts(true);
+      } else {
+        showBox('cloudMessage', 'לא אושרו התראות בדפדפן.', 'warning');
+      }
+    }
+
+    function maybeNotify(title, body, key) {
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+      const stampKey = 'notified_' + key;
+      const todayKey = new Date().toISOString().slice(0,10);
+      if (localStorage.getItem(stampKey) === todayKey) return;
+      new Notification(title, { body });
+      localStorage.setItem(stampKey, todayKey);
+    }
+
+    function checkAlerts(forceNotify = false) {
+      const alerts = [];
+      const targetDate = document.getElementById('targetDate').value;
+      const goalWeight = Number(document.getElementById('goalWeight').value);
+      const currentWeight = Number(document.getElementById('weight').value);
+
+      if (weightHistory.length) {
+        const lastDate = new Date(weightHistory[weightHistory.length - 1].date);
+        const daysSince = daysBetween(lastDate, new Date()) * -1;
+        if (daysSince >= 7) {
+          alerts.push('עברו לפחות 7 ימים מהשקילה האחרונה. כדאי להוסיף שקילה חדשה.');
+          if (forceNotify || Notification.permission === 'granted') {
+            maybeNotify('תזכורת שקילה', 'עברו לפחות 7 ימים מהשקילה האחרונה. כדאי לשקול ולהזין נתון חדש.', 'weigh_reminder');
+          }
+        }
+      }
+
+      if (targetDate) {
+        const daysLeft = daysBetween(new Date(), new Date(targetDate));
+        if (daysLeft >= 0 && daysLeft <= 7) {
+          alerts.push(`תאריך היעד קרוב - נשארו ${daysLeft} ימים.`);
+          if (forceNotify || Notification.permission === 'granted') {
+            maybeNotify('תאריך יעד מתקרב', `נשארו ${daysLeft} ימים לתאריך היעד שלך.`, 'target_date');
+          }
+        }
+      }
+
+      if (goalWeight && currentWeight && currentWeight <= goalWeight) {
+        alerts.push('כל הכבוד - הגעת למשקל היעד או ירדת מתחתיו.');
+        if (forceNotify || Notification.permission === 'granted') {
+          maybeNotify('הגעת ליעד', 'כל הכבוד, הגעת למשקל היעד שלך.', 'goal_reached');
+        }
+      }
+
+      if (!alerts.length) {
+        hideBox('appAlerts');
+        return;
+      }
+
+      showBox('appAlerts', `<strong>התראות:</strong><ul>${alerts.map(x => `<li>${x}</li>`).join('')}</ul>`, 'notes');
     }
 
     document.getElementById('registerBtn').addEventListener('click', registerUser);
@@ -740,24 +1018,17 @@
     document.getElementById('cloudLoadBtn').addEventListener('click', loadPlannerFromCloud);
     document.getElementById('calcBtn').addEventListener('click', calc);
     document.getElementById('resetBtn').addEventListener('click', resetPlannerForm);
+    document.getElementById('addWeighBtn').addEventListener('click', addWeighIn);
+    document.getElementById('enableNotificationsBtn').addEventListener('click', enableNotifications);
 
     if (auth && db) {
       onAuthStateChanged(auth, async (user) => {
-        currentUser = user;
         if (!user) {
+          currentUser = null;
           setLoggedOutUI();
           return;
         }
-
-        try {
-          const snap = await getDoc(doc(db, 'users', user.uid));
-          const data = snap.exists() ? snap.data() : {};
-          setLoggedInUI(data);
-          if (data.planner) applyPlannerDataToForm(data.planner);
-        } catch (err) {
-          setLoggedInUI();
-          showBox('cloudMessage', 'התחברת, אבל לא הצלחתי לקרוא את הנתונים מהענן: ' + err.message, 'warning');
-        }
+        await goToAppNow(user);
       });
     }
   </script>
