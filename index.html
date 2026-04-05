@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>מחשבון יעד קלורי - ענן ולוגין</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --accent: #2563eb;
+      --accent-soft: #eff6ff;
+      --danger: #b91c1c;
+      --warn: #92400e;
+      --ok: #166534;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 24px auto;
+      padding: 16px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+    h1, h2, h3 { margin-top: 0; }
+    .sub, .small { color: var(--muted); }
+    .small { font-size: 13px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    @media (max-width: 820px) {
+      .grid, .grid-3 { grid-template-columns: 1fr; }
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    label { font-weight: 700; font-size: 14px; }
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 16px;
+      background: #fff;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .primary { background: var(--accent); color: white; }
+    .secondary { background: #eef2f7; color: var(--text); }
+    .ghost { background: white; color: var(--accent); border: 1px solid #c7d2fe; }
+    .result-box {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      background: #fcfcfd;
+    }
+    .result-title { color: var(--muted); font-size: 14px; margin-bottom: 8px; }
+    .result-value { font-size: 28px; font-weight: 800; }
+    .notes, .formula, .warning, .banner {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+    .notes { background: #fafafa; }
+    .formula { background: var(--accent-soft); }
+    .warning {
+      background: #fff7ed;
+      border-color: #fed7aa;
+      color: var(--warn);
+    }
+    .banner {
+      background: #eefcf4;
+      border-color: #bbf7d0;
+      color: var(--ok);
+    }
+    .danger { color: var(--danger); font-weight: 700; }
+    .ok { color: var(--ok); font-weight: 700; }
+    .hidden { display: none !important; }
+    ul {
+      margin: 10px 0 0;
+      padding-right: 18px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .user-pill {
+      background: #eef2ff;
+      color: #3730a3;
+      border: 1px solid #c7d2fe;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+    canvas {
+      max-width: 100%;
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #eef2f7;
+      margin-top: 10px;
+      width: 100%;
+      height: 130px;
+    }
+    code.inline {
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="topbar">
+        <div>
+          <h1>מחשבון יעד קלורי עם לוגין ושמירה בענן</h1>
+          <div class="sub">הרשמה והתחברות עם שם פרטי, שם משפחה, אימייל וסיסמה. הנתונים נשמרים בענן לכל משתמש.</div>
+        </div>
+        <div id="userPill" class="user-pill hidden"></div>
+      </div>
+
+      <div id="configWarning" class="warning">
+        <strong>צריך לחבר Firebase לפני שהלוגין והשמירה בענן יעבדו.</strong>
+        <div class="small" style="margin-top:8px;">
+          בתוך הקובץ חפש את המשתנה <code class="inline">firebaseConfig</code> והדבק שם את הערכים שתקבל מ-Firebase Console.
+        </div>
+      </div>
+    </div>
+
+    <div id="authCard" class="card">
+      <div class="grid">
+        <div>
+          <h2>הרשמה</h2>
+          <div class="grid">
+            <div class="field">
+              <label for="firstName">שם פרטי</label>
+              <input id="firstName" type="text" />
+            </div>
+            <div class="field">
+              <label for="lastName">שם משפחה</label>
+              <input id="lastName" type="text" />
+            </div>
+            <div class="field">
+              <label for="registerEmail">אימייל</label>
+              <input id="registerEmail" type="email" />
+            </div>
+            <div class="field">
+              <label for="registerPassword">סיסמה</label>
+              <input id="registerPassword" type="password" />
+            </div>
+          </div>
+          <div class="actions">
+            <button class="primary" id="registerBtn">צור משתמש</button>
+          </div>
+        </div>
+
+        <div>
+          <h2>התחברות</h2>
+          <div class="grid">
+            <div class="field">
+              <label for="loginEmail">אימייל</label>
+              <input id="loginEmail" type="email" />
+            </div>
+            <div class="field">
+              <label for="loginPassword">סיסמה</label>
+              <input id="loginPassword" type="password" />
+            </div>
+          </div>
+          <div class="actions">
+            <button class="primary" id="loginBtn">התחבר</button>
+            <button class="ghost" id="resetPasswordBtn">איפוס סיסמה</button>
+          </div>
+          <div class="small" style="margin-top:8px;">
+            לוגין מאובטח לא יכול להישען רק על שם ושם משפחה, לכן הם נשמרים כפרטי פרופיל וההזדהות נעשית עם אימייל וסיסמה.
+          </div>
+        </div>
+      </div>
+
+      <div id="authMessage" class="notes hidden"></div>
+    </div>
+
+    <div id="appCard" class="card hidden">
+      <div class="topbar">
+        <h2 style="margin-bottom:0;">האזור האישי שלך</h2>
+        <div class="actions" style="margin-top:0;">
+          <button class="secondary" id="cloudSaveBtn">שמור לענן</button>
+          <button class="secondary" id="cloudLoadBtn">טען מהענן</button>
+          <button class="ghost" id="logoutBtn">התנתק</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="field">
+          <label for="age">גיל</label>
+          <input id="age" type="number" min="10" max="100" placeholder="למשל 35" />
+        </div>
+
+        <div class="field">
+          <label for="gender">מגדר</label>
+          <select id="gender">
+            <option value="male">גבר</option>
+            <option value="female">אישה</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="height">גובה בס"מ</label>
+          <input id="height" type="number" min="100" max="250" placeholder="למשל 178" />
+        </div>
+
+        <div class="field">
+          <label for="weight">משקל נוכחי בק"ג</label>
+          <input id="weight" type="number" min="30" max="300" step="0.1" placeholder="למשל 92.5" />
+        </div>
+
+        <div class="field">
+          <label for="goalWeight">משקל מטרה בק"ג</label>
+          <input id="goalWeight" type="number" min="30" max="300" step="0.1" placeholder="למשל 80" />
+        </div>
+
+        <div class="field">
+          <label for="targetDate">תאריך יעד</label>
+          <input id="targetDate" type="date" />
+        </div>
+
+        <div class="field">
+          <label for="activity">רמת פעילות</label>
+          <select id="activity">
+            <option value="1.2">יושבני כמעט בלי פעילות</option>
+            <option value="1.375">פעילות קלה - 1 עד 3 אימונים בשבוע</option>
+            <option value="1.55" selected>פעילות בינונית - 3 עד 5 אימונים בשבוע</option>
+            <option value="1.725">פעילות גבוהה - 6 עד 7 אימונים בשבוע</option>
+            <option value="1.9">פעילות גבוהה מאוד - עבודה פיזית או אימון כפול</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="calPerKg">קלוריות לכל ק"ג ירידה</label>
+          <input id="calPerKg" type="number" min="5000" max="12000" step="100" value="7700" />
+          <div class="small">ברירת המחדל היא 7700 לק"ג כאומדן פשטני.</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="calcBtn">חשב</button>
+        <button class="secondary" id="resetBtn" type="button">נקה</button>
+      </div>
+
+      <div id="cloudMessage" class="banner hidden"></div>
+
+      <div id="output" class="hidden">
+        <div class="grid-3" style="margin-top:20px;">
+          <div class="result-box">
+            <div class="result-title">BMR משוער</div>
+            <div class="result-value" id="bmrOut">-</div>
+            <div class="small">קלוריות ליום במנוחה</div>
+          </div>
+          <div class="result-box">
+            <div class="result-title">TDEE משוער</div>
+            <div class="result-value" id="tdeeOut">-</div>
+            <div class="small">קלוריות ליום לפי הפעילות שנבחרה</div>
+          </div>
+          <div class="result-box">
+            <div class="result-title">יעד קלורי יומי</div>
+            <div class="result-value" id="targetOut">-</div>
+            <div class="small">לפי היעד והתאריך</div>
+          </div>
+        </div>
+
+        <div class="formula" id="formulaBox"></div>
+        <div class="notes" id="notesBox"></div>
+        <div class="warning hidden" id="warningBox"></div>
+
+        <div class="notes">
+          <strong>גרף ירידה משוער:</strong>
+          <canvas id="progressChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js';
+    import {
+      getAuth,
+      onAuthStateChanged,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      sendPasswordResetEmail
+    } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js';
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+      serverTimestamp
+    } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "PUT_YOUR_API_KEY_HERE",
+      authDomain: "PUT_YOUR_AUTH_DOMAIN_HERE",
+      projectId: "PUT_YOUR_PROJECT_ID_HERE",
+      storageBucket: "PUT_YOUR_STORAGE_BUCKET_HERE",
+      messagingSenderId: "PUT_YOUR_MESSAGING_SENDER_ID_HERE",
+      appId: "PUT_YOUR_APP_ID_HERE"
+    };
+
+    const hasRealFirebaseConfig =
+      firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('PUT_YOUR') &&
+      firebaseConfig.projectId && !firebaseConfig.projectId.includes('PUT_YOUR');
+
+    let app = null;
+    let auth = null;
+    let db = null;
+    let currentUser = null;
+
+    if (hasRealFirebaseConfig) {
+      app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      db = getFirestore(app);
+      document.getElementById('configWarning').classList.add('hidden');
+    }
+
+    function showBox(id, message, type = 'notes') {
+      const el = document.getElementById(id);
+      el.className = type;
+      el.innerHTML = message;
+      el.classList.remove('hidden');
+    }
+
+    function hideBox(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function setUserPill(text) {
+      const el = document.getElementById('userPill');
+      if (!text) {
+        el.classList.add('hidden');
+        el.textContent = '';
+        return;
+      }
+      el.textContent = text;
+      el.classList.remove('hidden');
+    }
+
+    function formatNumber(num) {
+      return Math.round(num).toLocaleString('he-IL');
+    }
+
+    function daysBetween(today, future) {
+      const a = new Date(today);
+      const b = new Date(future);
+      const ms = b.setHours(0,0,0,0) - a.setHours(0,0,0,0);
+      return Math.ceil(ms / (1000 * 60 * 60 * 24));
+    }
+
+    function calculateBMR({ gender, weight, height, age }) {
+      if (gender === 'male') return 10 * weight + 6.25 * height - 5 * age + 5;
+      return 10 * weight + 6.25 * height - 5 * age - 161;
+    }
+
+    function safeFloor(gender, age) {
+      if (age < 18) return null;
+      return gender === 'male' ? 1500 : 1200;
+    }
+
+    function bmi(weight, heightCm) {
+      const h = heightCm / 100;
+      return weight / (h * h);
+    }
+
+    function getPlannerDataFromForm() {
+      return {
+        age: document.getElementById('age').value,
+        gender: document.getElementById('gender').value,
+        height: document.getElementById('height').value,
+        weight: document.getElementById('weight').value,
+        goalWeight: document.getElementById('goalWeight').value,
+        targetDate: document.getElementById('targetDate').value,
+        activity: document.getElementById('activity').value,
+        calPerKg: document.getElementById('calPerKg').value
+      };
+    }
+
+    function applyPlannerDataToForm(data = {}) {
+      const ids = ['age','gender','height','weight','goalWeight','targetDate','activity','calPerKg'];
+      ids.forEach((id) => {
+        if (data[id] !== undefined && data[id] !== null) {
+          document.getElementById(id).value = data[id];
+        }
+      });
+    }
+
+    function resetPlannerForm() {
+      applyPlannerDataToForm({
+        age: '',
+        gender: 'male',
+        height: '',
+        weight: '',
+        goalWeight: '',
+        targetDate: '',
+        activity: '1.55',
+        calPerKg: '7700'
+      });
+      document.getElementById('output').classList.add('hidden');
+      hideBox('warningBox');
+    }
+
+    function renderChart(currentWeight, goalWeight, days) {
+      const canvas = document.getElementById('progressChart');
+      const ctx = canvas.getContext('2d');
+
+      const cssWidth = canvas.clientWidth || 700;
+      const cssHeight = 130;
+      canvas.width = cssWidth * 2;
+      canvas.height = cssHeight * 2;
+      ctx.setTransform(2, 0, 0, 2, 0, 0);
+
+      const pad = 28;
+      ctx.clearRect(0, 0, cssWidth, cssHeight);
+
+      const points = Math.min(12, Math.max(2, Math.ceil(days / 7)));
+      const values = [];
+      for (let i = 0; i <= points; i++) {
+        const ratio = i / points;
+        values.push(currentWeight - ((currentWeight - goalWeight) * ratio));
+      }
+
+      const minV = Math.min(...values) - 1;
+      const maxV = Math.max(...values) + 1;
+
+      ctx.strokeStyle = '#d1d5db';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(pad, cssHeight - pad);
+      ctx.lineTo(cssWidth - pad, cssHeight - pad);
+      ctx.moveTo(cssWidth - pad, pad / 2);
+      ctx.lineTo(cssWidth - pad, cssHeight - pad);
+      ctx.stroke();
+
+      ctx.strokeStyle = '#2563eb';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      values.forEach((v, i) => {
+        const x = pad + (i * ((cssWidth - pad * 2) / points));
+        const y = (cssHeight - pad) - ((v - minV) / (maxV - minV)) * (cssHeight - pad * 1.5);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      ctx.fillStyle = '#1f2937';
+      ctx.font = '12px Arial';
+      values.forEach((v, i) => {
+        const x = pad + (i * ((cssWidth - pad * 2) / points));
+        const y = (cssHeight - pad) - ((v - minV) / (maxV - minV)) * (cssHeight - pad * 1.5);
+        ctx.beginPath();
+        ctx.arc(x, y, 2.7, 0, Math.PI * 2);
+        ctx.fill();
+        if (i === 0 || i === points) ctx.fillText(v.toFixed(1) + ' ק"ג', x - 16, y - 8);
+      });
+    }
+
+    function calc() {
+      const age = Number(document.getElementById('age').value);
+      const gender = document.getElementById('gender').value;
+      const height = Number(document.getElementById('height').value);
+      const weight = Number(document.getElementById('weight').value);
+      const goalWeight = Number(document.getElementById('goalWeight').value);
+      const targetDateValue = document.getElementById('targetDate').value;
+      const activity = Number(document.getElementById('activity').value);
+      const calPerKg = Number(document.getElementById('calPerKg').value);
+
+      const output = document.getElementById('output');
+      const warningBox = document.getElementById('warningBox');
+      const formulaBox = document.getElementById('formulaBox');
+      const notesBox = document.getElementById('notesBox');
+
+      warningBox.classList.add('hidden');
+      warningBox.innerHTML = '';
+
+      if (!age || !height || !weight || !goalWeight || !targetDateValue || !calPerKg) {
+        alert('צריך למלא את כל השדות.');
+        return;
+      }
+      if (goalWeight >= weight) {
+        alert('המחשבון הזה בנוי כרגע לירידה במשקל, לכן משקל המטרה צריך להיות נמוך מהמשקל הנוכחי.');
+        return;
+      }
+
+      const today = new Date();
+      const targetDate = new Date(targetDateValue);
+      const days = daysBetween(today, targetDate);
+      if (days <= 0) {
+        alert('צריך לבחור תאריך יעד עתידי.');
+        return;
+      }
+
+      const kgToLose = weight - goalWeight;
+      const totalDeficit = kgToLose * calPerKg;
+      const dailyDeficit = totalDeficit / days;
+      const bmr = calculateBMR({ gender, weight, height, age });
+      const tdee = bmr * activity;
+      let targetCalories = tdee - dailyDeficit;
+      const floor = safeFloor(gender, age);
+      const weeklyLoss = kgToLose / (days / 7);
+      const currentBMI = bmi(weight, height);
+      const goalBMI = bmi(goalWeight, height);
+
+      let statusText = '';
+
+      if (age < 18) {
+        statusText += '<p class="danger">לפי הגיל שהוזן, לא מוצג כאן יעד קלורי אגרסיבי לירידה. בגיל ההתבגרות עדיף לקבוע יעד עם איש מקצוע.</p>';
+        targetCalories = null;
+      } else if (floor && targetCalories < floor) {
+        statusText += `<p class="danger">היעד שיצא נמוך מסף זהירות מקובל של ${formatNumber(floor)} קלוריות ליום. לכן היעד הועלה אוטומטית לסף הזהירות.</p>`;
+        targetCalories = floor;
+      }
+
+      if (weeklyLoss > 1) {
+        statusText += '<p class="danger">קצב הירידה המבוקש מהיר יחסית. בדרך כלל עדיף יעד מתון יותר.</p>';
+      } else if (weeklyLoss >= 0.25 && weeklyLoss <= 1) {
+        statusText += '<p class="ok">קצב הירידה המבוקש נמצא בטווח מתון וסביר יחסית.</p>';
+      } else {
+        statusText += '<p>הקצב איטי יחסית. זה בסדר גמור אם המטרה היא ירידה יציבה ונוחה יותר.</p>';
+      }
+
+      document.getElementById('bmrOut').textContent = formatNumber(bmr);
+      document.getElementById('tdeeOut').textContent = formatNumber(tdee);
+      document.getElementById('targetOut').textContent = targetCalories ? formatNumber(targetCalories) : 'לא מוצג';
+
+      formulaBox.innerHTML = `
+        <strong>איך חישבנו:</strong>
+        <ul>
+          <li>BMR לפי Mifflin-St Jeor.</li>
+          <li>TDEE = BMR × מקדם פעילות.</li>
+          <li>משקל להורדה: <strong>${kgToLose.toFixed(1)}</strong> ק"ג.</li>
+          <li>סה"כ גירעון נדרש: <strong>${formatNumber(totalDeficit)}</strong> קלוריות.</li>
+          <li>מספר ימים עד היעד: <strong>${formatNumber(days)}</strong>.</li>
+          <li>גירעון יומי נדרש: <strong>${formatNumber(dailyDeficit)}</strong> קלוריות.</li>
+        </ul>
+      `;
+
+      notesBox.innerHTML = `
+        <strong>סיכום:</strong>
+        <ul>
+          <li>משקל נוכחי: <strong>${weight.toFixed(1)}</strong> ק"ג</li>
+          <li>משקל מטרה: <strong>${goalWeight.toFixed(1)}</strong> ק"ג</li>
+          <li>BMI נוכחי: <strong>${currentBMI.toFixed(1)}</strong></li>
+          <li>BMI ביעד: <strong>${goalBMI.toFixed(1)}</strong></li>
+          <li>קצב ירידה ממוצע נדרש: <strong>${weeklyLoss.toFixed(2)}</strong> ק"ג לשבוע</li>
+          <li>יעד קלורי יומי משוער: <strong>${targetCalories ? formatNumber(targetCalories) + ' קלוריות' : 'לא מוצג בגלל גיל מתחת ל-18'}</strong></li>
+        </ul>
+      `;
+
+      renderChart(weight, goalWeight, days);
+
+      if (statusText) {
+        warningBox.innerHTML = statusText;
+        warningBox.classList.remove('hidden');
+      }
+
+      output.classList.remove('hidden');
+    }
+
+    async function registerUser() {
+      if (!auth || !db) {
+        showBox('authMessage', 'קודם צריך להדביק את הגדרות Firebase בתוך הקובץ.', 'warning');
+        return;
+      }
+
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const email = document.getElementById('registerEmail').value.trim();
+      const password = document.getElementById('registerPassword').value;
+
+      if (!firstName || !lastName || !email || !password) {
+        showBox('authMessage', 'צריך למלא שם פרטי, שם משפחה, אימייל וסיסמה.', 'warning');
+        return;
+      }
+
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        await setDoc(doc(db, 'users', cred.user.uid), {
+          firstName,
+          lastName,
+          email,
+          createdAt: serverTimestamp(),
+          planner: {}
+        }, { merge: true });
+        showBox('authMessage', 'המשתמש נוצר בהצלחה.', 'banner');
+      } catch (err) {
+        showBox('authMessage', 'שגיאה בהרשמה: ' + err.message, 'warning');
+      }
+    }
+
+    async function loginUser() {
+      if (!auth) {
+        showBox('authMessage', 'קודם צריך להדביק את הגדרות Firebase בתוך הקובץ.', 'warning');
+        return;
+      }
+
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      if (!email || !password) {
+        showBox('authMessage', 'צריך למלא אימייל וסיסמה.', 'warning');
+        return;
+      }
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        showBox('authMessage', 'התחברת בהצלחה.', 'banner');
+      } catch (err) {
+        showBox('authMessage', 'שגיאה בהתחברות: ' + err.message, 'warning');
+      }
+    }
+
+    async function logoutUser() {
+      if (!auth) return;
+      await signOut(auth);
+    }
+
+    async function sendReset() {
+      if (!auth) {
+        showBox('authMessage', 'קודם צריך להדביק את הגדרות Firebase בתוך הקובץ.', 'warning');
+        return;
+      }
+      const email = document.getElementById('loginEmail').value.trim() || document.getElementById('registerEmail').value.trim();
+      if (!email) {
+        showBox('authMessage', 'תכתוב אימייל כדי לשלוח איפוס סיסמה.', 'warning');
+        return;
+      }
+      try {
+        await sendPasswordResetEmail(auth, email);
+        showBox('authMessage', 'נשלח מייל לאיפוס סיסמה.', 'banner');
+      } catch (err) {
+        showBox('authMessage', 'שגיאה באיפוס סיסמה: ' + err.message, 'warning');
+      }
+    }
+
+    async function savePlannerToCloud() {
+      if (!db || !currentUser) {
+        showBox('cloudMessage', 'צריך להתחבר כדי לשמור לענן.', 'warning');
+        return;
+      }
+      try {
+        const planner = getPlannerDataFromForm();
+        await setDoc(doc(db, 'users', currentUser.uid), {
+          planner,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+        showBox('cloudMessage', 'הנתונים נשמרו לענן.', 'banner');
+      } catch (err) {
+        showBox('cloudMessage', 'שגיאה בשמירה לענן: ' + err.message, 'warning');
+      }
+    }
+
+    async function loadPlannerFromCloud() {
+      if (!db || !currentUser) {
+        showBox('cloudMessage', 'צריך להתחבר כדי לטעון מהענן.', 'warning');
+        return;
+      }
+      try {
+        const snap = await getDoc(doc(db, 'users', currentUser.uid));
+        if (!snap.exists()) {
+          showBox('cloudMessage', 'לא נמצאו נתונים בענן עדיין.', 'warning');
+          return;
+        }
+        const data = snap.data();
+        applyPlannerDataToForm(data.planner || {});
+        showBox('cloudMessage', 'הנתונים נטענו מהענן.', 'banner');
+      } catch (err) {
+        showBox('cloudMessage', 'שגיאה בטעינה מהענן: ' + err.message, 'warning');
+      }
+    }
+
+    function setLoggedInUI(profile = null) {
+      document.getElementById('authCard').classList.add('hidden');
+      document.getElementById('appCard').classList.remove('hidden');
+      const fullName = profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : currentUser.email;
+      setUserPill(fullName || currentUser.email);
+    }
+
+    function setLoggedOutUI() {
+      document.getElementById('authCard').classList.remove('hidden');
+      document.getElementById('appCard').classList.add('hidden');
+      setUserPill('');
+      hideBox('cloudMessage');
+    }
+
+    document.getElementById('registerBtn').addEventListener('click', registerUser);
+    document.getElementById('loginBtn').addEventListener('click', loginUser);
+    document.getElementById('logoutBtn').addEventListener('click', logoutUser);
+    document.getElementById('resetPasswordBtn').addEventListener('click', sendReset);
+    document.getElementById('cloudSaveBtn').addEventListener('click', savePlannerToCloud);
+    document.getElementById('cloudLoadBtn').addEventListener('click', loadPlannerFromCloud);
+    document.getElementById('calcBtn').addEventListener('click', calc);
+    document.getElementById('resetBtn').addEventListener('click', resetPlannerForm);
+
+    if (auth && db) {
+      onAuthStateChanged(auth, async (user) => {
+        currentUser = user;
+        if (!user) {
+          setLoggedOutUI();
+          return;
+        }
+
+        try {
+          const snap = await getDoc(doc(db, 'users', user.uid));
+          const data = snap.exists() ? snap.data() : {};
+          setLoggedInUI(data);
+          if (data.planner) applyPlannerDataToForm(data.planner);
+        } catch (err) {
+          setLoggedInUI();
+          showBox('cloudMessage', 'התחברת, אבל לא הצלחתי לקרוא את הנתונים מהענן: ' + err.message, 'warning');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
