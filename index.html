@@ -445,7 +445,7 @@
           <span class="pill pill-neutral" style="background:#ecfdf3; color:#0f9f6e;">⚖️ שקילות</span>
           <span class="pill pill-neutral" style="background:#fff7ed; color:#b76e00;">🔔 תזכורות</span>
         </div>
-        <div class="small">Caloria Pro UI refresh</div>
+        
       </div>
     </div>
     <div class="card">
@@ -458,24 +458,24 @@
         </div>
         <div class="hero-stats">
           <div class="mini-stat">
-            <div class="small">פוקוס יומי</div>
+            
             <strong>Today</strong>
-            <div class="small">מסך בית קצר וברור לפעולה מהירה</div>
+            
           </div>
           <div class="mini-stat">
-            <div class="small">מוטיבציה</div>
+            
             <strong>Progress</strong>
-            <div class="small">גרפים, שקילות ומעקב רציף</div>
+            
           </div>
           <div class="mini-stat">
-            <div class="small">לוג מהיר</div>
+            
             <strong>Quick add</strong>
-            <div class="small">הוספת שקילה ותזכורות בלי עומס</div>
+            
           </div>
           <div class="mini-stat">
-            <div class="small">ענן</div>
+            
             <strong>Secure</strong>
-            <div class="small">נתונים אישיים לכל משתמש</div>
+            
           </div>
         </div>
       </div>
@@ -492,11 +492,7 @@
         <strong>צריך לחבר Firebase לפני שהלוגין והשמירה בענן יעבדו.</strong>
       </div>
 
-      <div class="notes">
-        <strong>חשוב לגבי אבטחה:</strong>
-        <div class="small" style="margin-top:8px;">
-          בקובץ Frontend של Firebase אי אפשר להסתיר באמת את <code class="inline">firebaseConfig</code>. Firebase מסבירים שה-API key של Firebase לא נחשב סוד, וההגנה האמיתית היא דרך Authentication, Firestore Security Rules ו-App Check. לכן האבטחה פה נעשית עם חוקים שחוסמים גישה לנתונים של משתמשים אחרים. 
-        </div>
+      
       </div>
     </div>
 
@@ -569,22 +565,22 @@
         <div class="metric-chip">
           <span class="small">מיקוד</span>
           <strong>יעד יומי</strong>
-          <div class="small">כמה לאכול היום כדי להתקדם</div>
+          
         </div>
         <div class="metric-chip">
           <span class="small">מעקב</span>
           <strong>שקילה מהירה</strong>
-          <div class="small">הוספה קלה ושמירה בענן</div>
+          
         </div>
         <div class="metric-chip">
           <span class="small">מוטיבציה</span>
           <strong>מגמת ירידה</strong>
-          <div class="small">גרף תחזית וגרף היסטוריה</div>
+          
         </div>
         <div class="metric-chip">
           <span class="small">התראות</span>
           <strong>זמן לפעול</strong>
-          <div class="small">זיהוי יעד קרוב או שקילה חסרה</div>
+          
         </div>
       </div>
 
@@ -629,7 +625,7 @@
         <div class="field">
           <label for="calPerKg">קלוריות לכל ק"ג ירידה</label>
           <input id="calPerKg" type="number" min="5000" max="12000" step="100" value="7700" />
-          <div class="small">ברירת המחדל היא 7700 לק"ג כאומדן פשטני.</div>
+          
         </div>
       </div>
 
@@ -643,17 +639,17 @@
           <div class="result-box">
             <div class="result-title">BMR משוער</div>
             <div class="result-value" id="bmrOut">-</div>
-            <div class="small">קלוריות ליום במנוחה</div>
+            
           </div>
           <div class="result-box">
             <div class="result-title">TDEE משוער</div>
             <div class="result-value" id="tdeeOut">-</div>
-            <div class="small">קלוריות ליום לפי הפעילות שנבחרה</div>
+            
           </div>
           <div class="result-box">
             <div class="result-title">יעד קלורי יומי</div>
             <div class="result-value" id="targetOut">-</div>
-            <div class="small">לפי היעד והתאריך</div>
+            
           </div>
         </div>
 
@@ -661,10 +657,7 @@
         <div class="notes" id="notesBox"></div>
         <div class="warning hidden" id="warningBox"></div>
 
-        <div class="notes">
-          <strong>גרף ירידה משוער:</strong>
-          <canvas id="progressChart"></canvas>
-        </div>
+        
       </div>
     </div>
 
@@ -672,7 +665,7 @@
       <div class="section-title">
         <div>
           <h2>היסטוריית שקילות</h2>
-          <div class="small">השקילות נשמרות בענן אצל המשתמש שלך בלבד.</div>
+          
         </div>
       </div>
 
@@ -695,9 +688,7 @@
         </div>
       </div>
 
-      <div class="notes">
-        <strong>סיכום שקילות:</strong>
-        <div id="historySummary" class="small" style="margin-top:8px;">עדיין אין שקילות.</div>
+      
       </div>
 
       <div style="overflow:auto;">
@@ -717,10 +708,7 @@
         </table>
       </div>
 
-      <div class="notes">
-        <strong>גרף היסטוריית שקילות:</strong>
-        <canvas id="historyChart"></canvas>
-      </div>
+      
         <div class="bottom-nav">
       <div class="bottom-nav-inner">
         <a class="nav-item active" href="#top">🏠 בית</a>
@@ -1172,6 +1160,7 @@
         applyPlannerDataToForm(data.planner || {});
         weightHistory = (data.weightHistory || []).sort((a,b) => (a.date > b.date ? 1 : -1));
         renderWeightHistory();
+        calcIfPossible();
         showBox('cloudMessage', 'הנתונים נטענו מהענן.', 'banner');
         checkAlerts();
       } catch (err) {
@@ -1187,7 +1176,14 @@
         userProfile = data;
         weightHistory = (data.weightHistory || []).sort((a,b) => (a.date > b.date ? 1 : -1));
         setLoggedInUI(data);
-        if (data.planner) applyPlannerDataToForm(data.planner);
+        if (data.planner) {
+          applyPlannerDataToForm(data.planner);
+          setTimeout(() => {
+            calcIfPossible();
+          }, 50);
+        } else {
+          document.getElementById('output').classList.add('hidden');
+        }
         renderWeightHistory();
         checkAlerts();
       } catch (err) {
