@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8" />
@@ -128,8 +128,8 @@ header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
 
   <!-- API Key Banner -->
   <div class="key-bar">
-    <label>🔑 Gemini API Key</label>
-    <input type="password" id="apiKeyInput" placeholder="AIza..." autocomplete="off" />
+    <label>🔑 OpenRouter API Key</label>
+    <input type="password" id="apiKeyInput" placeholder="sk-or-v1-..." autocomplete="off" />
     <button class="save" id="saveKey">שמור</button>
     <span class="key-status" id="keyStatus"></span>
   </div>
@@ -288,8 +288,8 @@ async function ocrImage(dataUrl){
 
 /* ---------- Claude API call ---------- */
 async function extractFromText(rawText){
-  if(!apiKey) throw new Error("הכניסו Gemini API key כדי להשתמש בשירות");
-  setProgress(75, "שולח ל-Gemini…");
+  if(!apiKey) throw new Error("הכניסו OpenRouter API key כדי להשתמש בשירות");
+  setProgress(75, "שולח ל-OpenRouter…");
   const cats = CATEGORIES.join("|");
   const prompt = [
     "Text extracted from a receipt or invoice (may be Hebrew or English).",
@@ -301,13 +301,17 @@ async function extractFromText(rawText){
     rawText.slice(0, 5000)
   ].join("\n");
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-  const resp = await fetch(url, {
+  const resp = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
-    headers: {"Content-Type": "application/json"},
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`
+    },
     body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
+      model: "meta-llama/llama-3.3-70b-instruct:free",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.1,
+      max_tokens: 1000
     })
   });
 
@@ -316,7 +320,7 @@ async function extractFromText(rawText){
   try{ data = JSON.parse(text); }
   catch(e){ throw new Error("שגיאת שרת: " + text.slice(0,100)); }
   if(!resp.ok || data.error) throw new Error(data?.error?.message || "HTTP " + resp.status);
-  const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  const raw = data?.choices?.[0]?.message?.content || "";
   const match = raw.match(/\{[\s\S]*\}/);
   if(!match) throw new Error("תשובה לא תקינה: " + raw.slice(0,80));
   return JSON.parse(match[0]);
