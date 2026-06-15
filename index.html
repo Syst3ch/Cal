@@ -1,1101 +1,529 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Caloria - שקילות, התראות ואבטחה</title>
-  <style>
-    :root {
-      --bg: #f6f7fb;
-      --card: #ffffff;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --accent: #2563eb;
-      --accent-soft: #eff6ff;
-      --danger: #b91c1c;
-      --warn: #92400e;
-      --ok: #166534;
-      --ok-bg: #eefcf4;
-      --warn-bg: #fff7ed;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-    }
-    .wrap {
-      max-width: 980px;
-      margin: 24px auto;
-      padding: 16px;
-      width: 100%;
-    }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-      padding: 22px;
-      margin: 0 auto 16px auto;
-      width: 100%;
-      max-width: 980px;
-    }
-    h1, h2, h3 { margin-top: 0; }
-    .sub, .small { color: var(--muted); }
-    .small { font-size: 13px; }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-      align-items: start;
-    }
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-      align-items: start;
-    }
-    .grid-4 {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-      align-items: start;
-    }
-    @media (max-width: 920px) { .grid, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      min-width: 0;
-      width: 100%;
-    }
-    label { font-weight: 700; font-size: 14px; }
-    input, select {
-      width: 100%;
-      min-width: 0;
-      padding: 12px 14px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      font-size: 16px;
-      background: #fff;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-    .actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 16px;
-      align-items: center;
-    }
-    button {
-      border: 0;
-      border-radius: 12px;
-      padding: 12px 18px;
-      font-size: 16px;
-      cursor: pointer;
-      font-weight: 700;
-    }
-    .primary { background: var(--accent); color: white; }
-    .secondary { background: #eef2f7; color: var(--text); }
-    .ghost { background: white; color: var(--accent); border: 1px solid #c7d2fe; }
-    .danger-btn { background: #fee2e2; color: #991b1b; }
-    .result-box {
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-      background: #fcfcfd;
-    }
-    .result-title { color: var(--muted); font-size: 14px; margin-bottom: 8px; }
-    .result-value { font-size: 28px; font-weight: 800; }
-    .notes, .formula, .warning, .banner {
-      margin-top: 16px;
-      padding: 14px 16px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-    }
-    .notes { background: #fafafa; }
-    .formula { background: var(--accent-soft); }
-    .warning { background: var(--warn-bg); border-color: #fed7aa; color: var(--warn); }
-    .banner { background: var(--ok-bg); border-color: #bbf7d0; color: var(--ok); }
-    .danger { color: var(--danger); font-weight: 700; }
-    .ok { color: var(--ok); font-weight: 700; }
-    .hidden { display: none !important; }
-    ul { margin: 10px 0 0; padding-right: 18px; }
-    .topbar {
-      display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
-    }
-    .user-pill {
-      background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; padding: 8px 12px;
-      border-radius: 999px; font-weight: 700;
-    }
-    canvas {
-      max-width: 100%; background: white; border-radius: 12px; border: 1px solid #eef2f7;
-      margin-top: 10px; width: 100%; height: 130px;
-    }
-    code.inline {
-      background: #f3f4f6; padding: 2px 6px; border-radius: 6px; font-size: 13px;
-      direction: ltr; display: inline-block;
-    }
-    table {
-      width: 100%; border-collapse: collapse; margin-top: 12px; background: white; border-radius: 12px; overflow: hidden;
-    }
-    th, td {
-      border-bottom: 1px solid #eef2f7; padding: 10px; text-align: right; font-size: 14px;
-    }
-    th { background: #f8fafc; }
-    .pill { display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
-    .pill-ok { background: #dcfce7; color: #166534; }
-    .pill-warn { background: #ffedd5; color: #9a3412; }
-    .pill-neutral { background: #e5e7eb; color: #374151; }
-  
-    body, button, input, select, textarea, table, th, td, div, span, h1, h2, h3, h4, h5, h6, p, a, label {
-      font-family: Arial, Helvetica, sans-serif !important;
-    }
-    .topbar > div:first-child, .topbar > div:last-child { min-width: 0; }
-    @media (max-width: 920px) {
-      .wrap, .card { max-width: 100%; }
-      .grid, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>פִּנְקָס — ניהול קבלות</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+:root{
+  --ink:#16160F; --paper:#F6F5F0; --card:#FCFBF7; --green:#1C6B47;
+  --green-soft:#E4EFE7; --stamp:#B23A2E; --line:#D9D6CC; --muted:#6E6B60;
+  --sans:"Assistant",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box} html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.45}
+.wrap{max-width:800px;margin:0 auto;padding:18px 16px 80px}
+
+/* api key banner */
+.key-bar{background:var(--ink);color:#fff;border-radius:12px;padding:14px 18px;
+  margin-bottom:18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.key-bar label{font-size:13px;color:#aaa;white-space:nowrap}
+.key-bar input{flex:1;min-width:200px;font-family:var(--mono);font-size:13px;
+  background:#2a2a20;color:#fff;border:1px solid #3a3a30;border-radius:7px;
+  padding:7px 10px}
+.key-bar input:focus{outline:none;border-color:var(--green)}
+.key-bar .save{font-size:13px;font-weight:700;cursor:pointer;
+  background:var(--green);border:none;color:#fff;padding:8px 14px;border-radius:7px}
+.key-status{font-size:12px;font-family:var(--mono);white-space:nowrap}
+.key-status.ok{color:#9be0bb} .key-status.no{color:#f9a8a8}
+
+header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:16px}
+.brand h1{font-family:var(--mono);font-weight:700;font-size:26px;letter-spacing:1px;margin:0}
+.brand .dot{color:var(--green)} .brand small{font-size:12.5px;color:var(--muted)}
+.brand{display:flex;align-items:baseline;gap:10px}
+.btn{font-family:var(--sans);font-weight:600;font-size:14px;cursor:pointer;
+  border:1px solid var(--line);background:var(--card);color:var(--ink);
+  padding:8px 14px;border-radius:9px;transition:.15s}
+.btn:hover{border-color:var(--ink)} .btn:disabled{opacity:.45;cursor:default}
+.btn-green{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-green:hover{background:#175438}
+
+.tally{position:relative;background:var(--ink);color:var(--paper);
+  border-radius:12px;padding:18px 20px 20px;margin-bottom:22px;
+  box-shadow:0 8px 24px -16px rgba(0,0,0,.5)}
+.tally::before,.tally::after{content:"";position:absolute;left:0;right:0;height:8px;
+  background-image:radial-gradient(circle at 6px 4px,var(--paper) 4px,transparent 4.5px);
+  background-size:12px 8px;background-repeat:repeat-x}
+.tally::before{top:-4px} .tally::after{bottom:-4px}
+.tally .row{display:flex;justify-content:space-between;align-items:baseline;
+  font-family:var(--mono);font-size:13px;color:#cfccc0;padding:3px 0}
+.tally .row .v{color:var(--paper)}
+.tally .grand{border-top:1px dashed #4a473d;margin-top:8px;padding-top:10px;
+  display:flex;justify-content:space-between;align-items:flex-end}
+.tally .grand .lbl{font-size:13px;color:#cfccc0}
+.tally .grand .amt{font-family:var(--mono);font-weight:700;font-size:30px;color:#fff}
+.tally .grand .amt .cur{font-size:16px;color:#9be0bb;margin-inline-start:4px}
+
+.drop{border:1.5px dashed var(--line);border-radius:12px;background:var(--card);
+  padding:26px 18px;text-align:center;transition:.18s;cursor:pointer;margin-bottom:14px}
+.drop:hover,.drop.drag{border-color:var(--green);background:var(--green-soft)}
+.drop .ico{font-size:26px;display:block;margin-bottom:8px}
+.drop .big{font-weight:700;font-size:16px;margin-bottom:4px}
+.drop .sub{font-size:13px;color:var(--muted)}
+#file{display:none}
+
+/* progress */
+.progress-bar{height:3px;background:var(--line);border-radius:2px;margin-bottom:14px;overflow:hidden;display:none}
+.progress-bar.show{display:block}
+.progress-fill{height:100%;background:var(--green);transition:width .3s;width:0}
+.progress-label{font-size:12px;color:var(--muted);text-align:center;margin-top:3px;font-family:var(--mono)}
+
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:18px 0 8px}
+.search{flex:1;min-width:160px}
+.search input{width:100%;font-family:var(--sans);font-size:14px;padding:9px 12px;
+  border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.search input:focus{outline:none;border-color:var(--ink)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chip{font-size:12.5px;font-weight:600;padding:6px 11px;border-radius:20px;cursor:pointer;
+  border:1px solid var(--line);background:var(--card);color:var(--muted);transition:.12s;white-space:nowrap}
+.chip:hover{border-color:var(--ink);color:var(--ink)} .chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+.list{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.item{border-bottom:1px dashed var(--line)} .item:last-child{border-bottom:none}
+.item-head{display:flex;align-items:center;gap:12px;padding:13px 15px;cursor:pointer}
+.item-head:hover{background:#f3f1ea}
+.thumb{width:40px;height:50px;border-radius:5px;object-fit:cover;background:#eee;border:1px solid var(--line);flex-shrink:0}
+.thumb.ph{display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--muted)}
+.meta{flex:1;min-width:0}
+.meta .v{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta .d{font-size:12.5px;color:var(--muted);font-family:var(--mono)}
+.cat{font-size:11px;font-weight:600;color:var(--green);background:var(--green-soft);
+  padding:2px 8px;border-radius:12px;display:inline-block;margin-top:3px}
+.amt-col{text-align:end;flex-shrink:0}
+.amt-col .t{font-family:var(--mono);font-weight:700;font-size:16px}
+.amt-col .vat{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.spin{width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--green);
+  border-radius:50%;animation:sp .7s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+.detail{padding:0 15px 16px;background:#f3f1ea}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:14px}
+.fld{display:flex;flex-direction:column;gap:3px}
+.fld label{font-size:11px;color:var(--muted);font-weight:600}
+.fld input,.fld select{font-family:var(--sans);font-size:14px;padding:7px 9px;
+  border:1px solid var(--line);border-radius:7px;background:var(--card);color:var(--ink)}
+.fld input:focus,.fld select:focus{outline:none;border-color:var(--ink)}
+.fld.mono input{font-family:var(--mono)}
+.actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.btn-ghost{background:transparent;border:none;color:var(--stamp);font-weight:600;
+  cursor:pointer;font-size:13.5px;padding:8px 4px}
+.btn-sm{padding:7px 12px;font-size:13px}
+
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .e-ico{font-size:34px;margin-bottom:10px}
+.empty .e-t{font-weight:700;color:var(--ink);font-size:16px;margin-bottom:4px}
+
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+  background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:10px;
+  font-size:13.5px;font-weight:600;opacity:0;transition:.25s;pointer-events:none;z-index:50;max-width:90vw}
+.toast.show{opacity:1}
+.foot{text-align:center;font-size:11.5px;color:var(--muted);margin-top:18px;font-family:var(--mono)}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <div class="topbar">
-        <div>
-          <h1>Caloria - מעקב ירידה במשקל</h1>
-          <div class="sub">לוגין, שמירה בענן, היסטוריית שקילות, ותזכורות בתוך האפליקציה ובדפדפן.</div>
-        </div>
-        <div id="userPill" class="user-pill hidden"></div>
-      </div>
+<div class="wrap">
 
-      <div id="configWarning" class="warning hidden">
-        <strong>צריך לחבר Firebase לפני שהלוגין והשמירה בענן יעבדו.</strong>
-      </div>
-      </div>
-    </div>
-
-    <div id="authCard" class="card" style="display:block;">
-      <div class="grid">
-        <div>
-          <h2>הרשמה</h2>
-          <div class="grid">
-            <div class="field">
-              <label for="firstName">שם פרטי</label>
-              <input id="firstName" type="text" />
-            </div>
-            <div class="field">
-              <label for="lastName">שם משפחה</label>
-              <input id="lastName" type="text" />
-            </div>
-            <div class="field">
-              <label for="registerEmail">אימייל</label>
-              <input id="registerEmail" type="email" />
-            </div>
-            <div class="field">
-              <label for="registerPassword">סיסמה</label>
-              <input id="registerPassword" type="password" />
-            </div>
-          </div>
-          <div class="actions">
-            <button class="primary" id="registerBtn">צור משתמש</button>
-          </div>
-        </div>
-
-        <div>
-          <h2>התחברות</h2>
-          <div class="grid">
-            <div class="field">
-              <label for="loginEmail">אימייל</label>
-              <input id="loginEmail" type="email" />
-            </div>
-            <div class="field">
-              <label for="loginPassword">סיסמה</label>
-              <input id="loginPassword" type="password" />
-            </div>
-          </div>
-          <div class="actions">
-            <button class="primary" id="loginBtn">התחבר</button>
-            <button class="ghost" id="resetPasswordBtn">איפוס סיסמה</button>
-          </div>
-          <div class="small" style="margin-top:8px;">
-            שם פרטי ושם משפחה נשמרים בפרופיל. ההזדהות עצמה מתבצעת עם אימייל וסיסמה.
-          </div>
-        </div>
-      </div>
-      <div id="authMessage" class="notes hidden"></div>
-    </div>
-
-    <div id="appCard" class="card hidden" style="display:none;">
-      <div class="topbar">
-        <h2 style="margin-bottom:0;">האזור האישי שלך</h2>
-        <div class="actions" style="margin-top:0;">
-          <button class="secondary" id="cloudSaveBtn">שמור לענן</button>
-          <button class="secondary" id="cloudLoadBtn">טען מהענן</button>
-          <button class="ghost" id="enableNotificationsBtn">אפשר התראות</button>
-          <button class="ghost" id="logoutBtn">התנתק</button>
-        </div>
-      </div>
-
-      <div id="cloudMessage" class="banner hidden"></div>
-      <div id="appAlerts" class="notes hidden"></div>
-
-      <div class="grid">
-        <div class="field">
-          <label for="age">גיל</label>
-          <input id="age" type="number" min="10" max="100" placeholder="למשל 35" />
-        </div>
-        <div class="field">
-          <label for="gender">מגדר</label>
-          <select id="gender">
-            <option value="male">גבר</option>
-            <option value="female">אישה</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="height">גובה בס"מ</label>
-          <input id="height" type="number" min="100" max="250" placeholder="למשל 178" />
-        </div>
-        <div class="field">
-          <label for="weight">משקל נוכחי בק"ג</label>
-          <input id="weight" type="number" min="30" max="300" step="0.1" placeholder="למשל 92.5" />
-        </div>
-        <div class="field">
-          <label for="goalWeight">משקל מטרה בק"ג</label>
-          <input id="goalWeight" type="number" min="30" max="300" step="0.1" placeholder="למשל 80" />
-        </div>
-        <div class="field">
-          <label for="targetDate">תאריך יעד</label>
-          <input id="targetDate" type="date" />
-        </div>
-        <div class="field">
-          <label for="activity">רמת פעילות</label>
-          <select id="activity">
-            <option value="1.2">יושבני כמעט בלי פעילות</option>
-            <option value="1.375">פעילות קלה - 1 עד 3 אימונים בשבוע</option>
-            <option value="1.55" selected>פעילות בינונית - 3 עד 5 אימונים בשבוע</option>
-            <option value="1.725">פעילות גבוהה - 6 עד 7 אימונים בשבוע</option>
-            <option value="1.9">פעילות גבוהה מאוד - עבודה פיזית או אימון כפול</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="calPerKg">קלוריות לכל ק"ג ירידה</label>
-          <input id="calPerKg" type="number" min="5000" max="12000" step="100" value="7700" />
-          <div class="small">ברירת המחדל היא 7700 לק"ג כאומדן פשטני.</div>
-        </div>
-      </div>
-
-      <div class="actions">
-        <button class="primary" id="calcBtn">חשב</button>
-        <button class="secondary" id="resetBtn" type="button">נקה</button>
-      </div>
-
-      <div id="output" class="hidden">
-        <div class="grid-3" style="margin-top:20px;">
-          <div class="result-box">
-            <div class="result-title">BMR משוער</div>
-            <div class="result-value" id="bmrOut">-</div>
-            <div class="small">קלוריות ליום במנוחה</div>
-          </div>
-          <div class="result-box">
-            <div class="result-title">TDEE משוער</div>
-            <div class="result-value" id="tdeeOut">-</div>
-            <div class="small">קלוריות ליום לפי הפעילות שנבחרה</div>
-          </div>
-          <div class="result-box">
-            <div class="result-title">יעד קלורי יומי</div>
-            <div class="result-value" id="targetOut">-</div>
-            <div class="small">לפי היעד והתאריך</div>
-          </div>
-        </div>
-
-        <div class="formula" id="formulaBox"></div>
-        <div class="notes" id="notesBox"></div>
-        <div class="warning hidden" id="warningBox"></div>
-
-        <div class="notes">
-          <strong>גרף ירידה משוער:</strong>
-          <canvas id="progressChart"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <div id="historyCard" class="card hidden" style="display:none;">
-      <div class="topbar">
-        <div>
-          <h2>היסטוריית שקילות</h2>
-          <div class="small">השקילות נשמרות בענן אצל המשתמש שלך בלבד.</div>
-        </div>
-      </div>
-
-      <div class="grid-4">
-        <div class="field">
-          <label for="weighDate">תאריך שקילה</label>
-          <input id="weighDate" type="date" />
-        </div>
-        <div class="field">
-          <label for="weighWeight">משקל בק"ג</label>
-          <input id="weighWeight" type="number" min="30" max="300" step="0.1" />
-        </div>
-        <div class="field">
-          <label for="weighNote">הערה</label>
-          <input id="weighNote" type="text" placeholder="למשל אחרי שבת / אחרי אימון" />
-        </div>
-        <div class="field">
-          <label>&nbsp;</label>
-          <button class="primary" id="addWeighBtn">הוסף שקילה</button>
-        </div>
-      </div>
-
-      <div class="notes">
-        <strong>סיכום שקילות:</strong>
-        <div id="historySummary" class="small" style="margin-top:8px;">עדיין אין שקילות.</div>
-      </div>
-
-      <div style="overflow:auto;">
-        <table>
-          <thead>
-            <tr>
-              <th>תאריך</th>
-              <th>משקל</th>
-              <th>שינוי משקילה קודמת</th>
-              <th>הערה</th>
-              <th>מחיקה</th>
-            </tr>
-          </thead>
-          <tbody id="historyTableBody">
-            <tr><td colspan="5" class="small">עדיין אין נתונים.</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="notes">
-        <strong>גרף היסטוריית שקילות:</strong>
-        <canvas id="historyChart"></canvas>
-      </div>
-    </div>
+  <!-- API Key Banner -->
+  <div class="key-bar">
+    <label>🔑 Gemini API Key</label>
+    <input type="password" id="apiKeyInput" placeholder="AIza..." autocomplete="off" />
+    <button class="save" id="saveKey">שמור</button>
+    <span class="key-status" id="keyStatus"></span>
   </div>
 
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js';
-    import {
-      getAuth,
-      onAuthStateChanged,
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      signOut,
-      sendPasswordResetEmail
-    } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js';
-    import {
-      getFirestore,
-      doc,
-      setDoc,
-      getDoc,
-      updateDoc,
-      serverTimestamp,
-      arrayUnion,
-      arrayRemove
-    } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js';
-    import {
-      initializeAppCheck,
-      ReCaptchaV3Provider
-    } from 'https://www.gstatic.com/firebasejs/12.11.0/firebase-app-check.js';
+  <header>
+    <div class="brand">
+      <h1>פִּנְקָס<span class="dot">.</span></h1>
+      <small>מהקבלה לדוח — אוטומטית</small>
+    </div>
+    <button class="btn" id="exportBtn">ייצוא CSV</button>
+  </header>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDEkd9GegQj_28cIteuigXkkAZwDTqcF_s",
-      authDomain: "caloria1994.firebaseapp.com",
-      projectId: "caloria1994",
-      storageBucket: "caloria1994.firebasestorage.app",
-      messagingSenderId: "362377290061",
-      appId: "1:362377290061:web:aea8928c51237387839704"
+  <div class="tally" id="tally"></div>
+
+  <div class="drop" id="drop">
+    <span class="ico">🧾</span>
+    <div class="big">גררו קבלה לכאן, צלמו או בחרו קובץ</div>
+    <div class="sub">תמונה (JPG, PNG, HEIC) או PDF — ה-AI יקרא את כל הפרטים</div>
+  </div>
+  <input type="file" id="file" accept="image/*,application/pdf" multiple />
+
+  <div class="progress-bar" id="progressBar">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+  <div class="progress-label" id="progressLabel"></div>
+
+  <div class="filters">
+    <div class="search"><input id="search" placeholder="חיפוש לפי ספק…" /></div>
+  </div>
+  <div class="chips" id="chips"></div>
+  <div id="listArea"></div>
+
+  <div class="foot">פִּנְקָס · הנתונים נשמרים מקומית בדפדפן · API key נשמר רק בדפדפן שלך · חינמי לגמרי</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const CATEGORIES = ["מזון ומסעדות","דלק ותחבורה","ציוד ומשרד","תוכנה ומנויים","אירוח ולינה","שיווק ופרסום","שירותים מקצועיים","אחר"];
+const STORAGE_KEY = "pinkas_v2";
+const API_KEY_STORE = "pinkas_apikey";
+
+let receipts = [];
+let filterCat = null;
+let searchText = "";
+let expandedId = null;
+let editingId = null;
+let apiKey = "";
+
+/* ---------- API key ---------- */
+function loadKey(){
+  apiKey = localStorage.getItem(API_KEY_STORE) || "";
+  const inp = document.getElementById('apiKeyInput');
+  inp.value = apiKey ? "sk-ant-••••••••" : "";
+  updateKeyStatus();
+}
+function saveKey(){
+  const val = document.getElementById('apiKeyInput').value.trim();
+  if(val && !val.startsWith("sk-ant-•")){
+    apiKey = val;
+    localStorage.setItem(API_KEY_STORE, val);
+  }
+  updateKeyStatus();
+  toast("🔑 API key נשמר");
+}
+function updateKeyStatus(){
+  const el = document.getElementById('keyStatus');
+  if(apiKey){ el.textContent="✓ מחובר"; el.className="key-status ok"; }
+  else{ el.textContent="לא הוגדר"; el.className="key-status no"; }
+}
+document.getElementById('saveKey').onclick = saveKey;
+document.getElementById('apiKeyInput').addEventListener('keydown', e => { if(e.key==='Enter') saveKey(); });
+
+/* ---------- helpers ---------- */
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const esc = s => (s==null?"":String(s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function money(n,cur){
+  if(n==null||isNaN(n)) return "—";
+  try{ return new Intl.NumberFormat('he-IL',{style:'currency',currency:cur||'ILS',maximumFractionDigits:2}).format(n); }
+  catch(e){ return (cur||'₪')+" "+Number(n).toFixed(2); }
+}
+function toast(msg,dur=2400){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),dur);
+}
+function setProgress(pct, label){
+  const bar=document.getElementById('progressBar');
+  const fill=document.getElementById('progressFill');
+  const lbl=document.getElementById('progressLabel');
+  if(pct===null){ bar.classList.remove('show'); lbl.textContent=""; return; }
+  bar.classList.add('show');
+  fill.style.width=pct+"%";
+  lbl.textContent=label||"";
+}
+
+/* ---------- storage ---------- */
+function persist(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(receipts)); }catch(e){} }
+function loadData(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]"); }catch(e){ return []; } }
+
+/* ---------- file helpers ---------- */
+function fileToBase64(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=()=>res(r.result.split(",")[1]);
+    r.onerror=()=>rej(new Error("read failed"));
+    r.readAsDataURL(file);
+  });
+}
+function makeThumb(file){
+  return new Promise(res=>{
+    if(file.type==="application/pdf"){ res(null); return; }
+    const img=new Image(), url=URL.createObjectURL(file);
+    img.onload=()=>{
+      const maxW=150, s=Math.min(1,maxW/img.width);
+      const c=document.createElement('canvas');
+      c.width=img.width*s; c.height=img.height*s;
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      URL.revokeObjectURL(url); res(c.toDataURL('image/jpeg',0.5));
     };
+    img.onerror=()=>{ URL.revokeObjectURL(url); res(null); };
+    img.src=url;
+  });
+}
 
-    const recaptchaSiteKey = "PUT_YOUR_RECAPTCHA_V3_SITE_KEY_HERE";
+/* ---------- PDF text extraction ---------- */
+async function extractPdfText(b64){
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  const bytes = Uint8Array.from(atob(b64), c=>c.charCodeAt(0));
+  const doc = await pdfjsLib.getDocument({data:bytes}).promise;
+  let text = "";
+  for(let i=1; i<=Math.min(doc.numPages,4); i++){
+    const page = await doc.getPage(i);
+    const content = await page.getTextContent();
+    text += content.items.map(it=>it.str).join(" ") + "\n";
+  }
+  return text.trim();
+}
 
-    const hasRealFirebaseConfig =
-      firebaseConfig.apiKey &&
-      firebaseConfig.projectId &&
-      firebaseConfig.projectId.length > 0;
+/* ---------- Image OCR via Tesseract ---------- */
+async function ocrImage(dataUrl){
+  setProgress(40, "מריץ OCR…");
+  // Dynamically load tesseract only when needed
+  if(typeof Tesseract === "undefined"){
+    await new Promise((res,rej)=>{
+      const s=document.createElement('script');
+      s.src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js";
+      s.onload=res; s.onerror=()=>rej(new Error("Tesseract failed to load"));
+      document.head.appendChild(s);
+    });
+  }
+  const result = await Tesseract.recognize(dataUrl, ["heb","eng"], {
+    logger: m => { if(m.status==="recognizing text") setProgress(40+m.progress*30,"OCR "+Math.round(m.progress*100)+"%"); }
+  });
+  return result.data.text || "";
+}
 
-    let app = null;
-    let auth = null;
-    let db = null;
-    let currentUser = null;
-    let userProfile = null;
-    let weightHistory = [];
+/* ---------- Claude API call ---------- */
+async function extractFromText(rawText){
+  if(!apiKey) throw new Error("הכניסו Gemini API key כדי להשתמש בשירות");
+  setProgress(75, "שולח ל-Gemini…");
+  const cats = CATEGORIES.join("|");
+  const prompt = [
+    "Text extracted from a receipt or invoice (may be Hebrew or English).",
+    "Return ONLY a valid minified JSON object with this schema:",
+    `{"vendor":string,"date":"YYYY-MM-DD or null","category":"one of: ${cats}","currency":"ILS|USD|EUR","subtotal":number_or_null,"vat":number_or_null,"total":number_or_null,"payment_method":string_or_null,"confidence":0.0_to_1.0}`,
+    "Rules: amounts are plain numbers without symbols. Unknown → null. Output ONLY the JSON.",
+    "",
+    "RECEIPT TEXT:",
+    rawText.slice(0, 5000)
+  ].join("\n");
 
-    if (hasRealFirebaseConfig) {
-      app = initializeApp(firebaseConfig);
-      auth = getAuth(app);
-      db = getFirestore(app);
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+  const resp = await fetch(url, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
+    })
+  });
 
-      if (recaptchaSiteKey && !recaptchaSiteKey.includes('PUT_YOUR')) {
-        try {
-          initializeAppCheck(app, {
-            provider: new ReCaptchaV3Provider(recaptchaSiteKey),
-            isTokenAutoRefreshEnabled: true
-          });
-        } catch (e) {
-          console.warn('App Check not initialized', e);
-        }
-      }
-    } else {
-      document.getElementById('configWarning').classList.remove('hidden');
-    }
+  const text = await resp.text();
+  let data;
+  try{ data = JSON.parse(text); }
+  catch(e){ throw new Error("שגיאת שרת: " + text.slice(0,100)); }
+  if(!resp.ok || data.error) throw new Error(data?.error?.message || "HTTP " + resp.status);
+  const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  const match = raw.match(/\{[\s\S]*\}/);
+  if(!match) throw new Error("תשובה לא תקינה: " + raw.slice(0,80));
+  return JSON.parse(match[0]);
+}
 
-    function showBox(id, message, type = 'notes') {
-      const el = document.getElementById(id);
-      el.className = type;
-      el.innerHTML = message;
-      el.classList.remove('hidden');
-    }
+/* ---------- main extraction pipeline ---------- */
+async function extractReceipt(b64, rawMediaType, file){
+  const isPdf = (rawMediaType||"").toLowerCase() === "application/pdf";
+  let extractedText = "";
 
-    function hideBox(id) {
-      document.getElementById(id).classList.add('hidden');
-    }
-
-    function setUserPill(text) {
-      const el = document.getElementById('userPill');
-      if (!text) {
-        el.classList.add('hidden');
-        el.textContent = '';
-        return;
-      }
-      el.textContent = text;
-      el.classList.remove('hidden');
-    }
-
-    function formatNumber(num) { return Math.round(num).toLocaleString('he-IL'); }
-
-    function daysBetween(today, future) {
-      const a = new Date(today);
-      const b = new Date(future);
-      const ms = b.setHours(0,0,0,0) - a.setHours(0,0,0,0);
-      return Math.ceil(ms / (1000 * 60 * 60 * 24));
-    }
-
-    function formatDateValue(val) {
-      if (!val) return '';
-      const d = new Date(val);
-      if (Number.isNaN(d.getTime())) return val;
-      return d.toLocaleDateString('he-IL');
-    }
-
-    function calculateBMR({ gender, weight, height, age }) {
-      if (gender === 'male') return 10 * weight + 6.25 * height - 5 * age + 5;
-      return 10 * weight + 6.25 * height - 5 * age - 161;
-    }
-
-    function safeFloor(gender, age) {
-      if (age < 18) return null;
-      return gender === 'male' ? 1500 : 1200;
-    }
-
-    function bmi(weight, heightCm) {
-      const h = heightCm / 100;
-      return weight / (h * h);
-    }
-
-    function getPlannerDataFromForm() {
-      return {
-        age: document.getElementById('age').value,
-        gender: document.getElementById('gender').value,
-        height: document.getElementById('height').value,
-        weight: document.getElementById('weight').value,
-        goalWeight: document.getElementById('goalWeight').value,
-        targetDate: document.getElementById('targetDate').value,
-        activity: document.getElementById('activity').value,
-        calPerKg: document.getElementById('calPerKg').value
+  if(isPdf){
+    setProgress(20, "מחלץ טקסט מ-PDF…");
+    extractedText = await extractPdfText(b64);
+    if(!extractedText.trim()) throw new Error("לא נמצא טקסט ב-PDF (ייתכן שהוא סרוק — נסו תמונה)");
+  } else {
+    setProgress(20, "מעבד תמונה…");
+    // Render to canvas for OCR
+    const dataUrl = await new Promise((res,rej)=>{
+      const img=new Image();
+      img.onload=()=>{
+        const MAX=1600, s=Math.min(1,MAX/Math.max(img.width,img.height));
+        const c=document.createElement("canvas");
+        c.width=Math.round(img.width*s); c.height=Math.round(img.height*s);
+        c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+        res(c.toDataURL("image/png"));
       };
-    }
+      img.onerror=()=>rej(new Error("טעינת תמונה נכשלה"));
+      img.src = "data:"+(rawMediaType||"image/jpeg")+";base64,"+b64;
+    });
+    extractedText = await ocrImage(dataUrl);
+    if(!extractedText.trim()) throw new Error("OCR לא הצליח לחלץ טקסט — נסו תמונה ברורה יותר");
+  }
 
-    function applyPlannerDataToForm(data = {}) {
-      const ids = ['age','gender','height','weight','goalWeight','targetDate','activity','calPerKg'];
-      ids.forEach((id) => {
-        if (data[id] !== undefined && data[id] !== null) document.getElementById(id).value = data[id];
+  console.log("[פנקס] extracted text:", extractedText.slice(0,400));
+  return await extractFromText(extractedText);
+}
+
+/* ---------- ingest ---------- */
+async function handleFiles(files){
+  for(const file of files){
+    const id = uid();
+    const thumb = await makeThumb(file);
+    const rec = {id, status:"processing", vendor:"מעבד…", date:null, category:null,
+                 currency:"ILS", subtotal:null, vat:null, total:null,
+                 payment_method:null, thumb, createdAt:Date.now()};
+    receipts.unshift(rec);
+    render();
+    try{
+      setProgress(10, "קורא קובץ…");
+      const b64 = await fileToBase64(file);
+      const out = await extractReceipt(b64, file.type, file);
+      Object.assign(rec,{
+        status:"done",
+        vendor: out.vendor || "ספק לא מזוהה",
+        date: out.date || null,
+        category: CATEGORIES.includes(out.category) ? out.category : "אחר",
+        currency: out.currency || "ILS",
+        subtotal: numOrNull(out.subtotal),
+        vat: numOrNull(out.vat),
+        total: numOrNull(out.total),
+        payment_method: out.payment_method || null,
+        confidence: out.confidence
       });
+      toast("✓ " + (rec.vendor||"קבלה") + " נקלטה");
+    } catch(e){
+      console.error("[פנקס]", e);
+      Object.assign(rec,{status:"error", vendor:"לא זוהה — ערכו ידנית", category:"אחר", _err:e.message});
+      toast("❌ " + (e.message||"שגיאת חילוץ").slice(0,70));
     }
-
-    function resetPlannerForm() {
-      applyPlannerDataToForm({
-        age: '',
-        gender: 'male',
-        height: '',
-        weight: '',
-        goalWeight: '',
-        targetDate: '',
-        activity: '1.55',
-        calPerKg: '7700'
-      });
-      document.getElementById('output').classList.add('hidden');
-      hideBox('warningBox');
-    }
-
-    function renderLineChart(canvasId, values, labels, startLabel, endLabel) {
-      const canvas = document.getElementById(canvasId);
-      const ctx = canvas.getContext('2d');
-      const cssWidth = canvas.clientWidth || 700;
-      const cssHeight = 130;
-      canvas.width = cssWidth * 2;
-      canvas.height = cssHeight * 2;
-      ctx.setTransform(2, 0, 0, 2, 0, 0);
-
-      const pad = 28;
-      ctx.clearRect(0, 0, cssWidth, cssHeight);
-
-      if (!values || values.length === 0) return;
-
-      const minV = Math.min(...values) - 1;
-      const maxV = Math.max(...values) + 1;
-      const points = Math.max(1, values.length - 1);
-
-      ctx.strokeStyle = '#d1d5db';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(pad, cssHeight - pad);
-      ctx.lineTo(cssWidth - pad, cssHeight - pad);
-      ctx.moveTo(cssWidth - pad, pad / 2);
-      ctx.lineTo(cssWidth - pad, cssHeight - pad);
-      ctx.stroke();
-
-      ctx.strokeStyle = '#2563eb';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-
-      values.forEach((v, i) => {
-        const x = pad + (i * ((cssWidth - pad * 2) / points));
-        const y = (cssHeight - pad) - ((v - minV) / (maxV - minV || 1)) * (cssHeight - pad * 1.5);
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.stroke();
-
-      ctx.fillStyle = '#1f2937';
-      ctx.font = '12px Arial';
-      values.forEach((v, i) => {
-        const x = pad + (i * ((cssWidth - pad * 2) / points));
-        const y = (cssHeight - pad) - ((v - minV) / (maxV - minV || 1)) * (cssHeight - pad * 1.5);
-        ctx.beginPath();
-        ctx.arc(x, y, 2.7, 0, Math.PI * 2);
-        ctx.fill();
-        if (i === 0 || i === values.length - 1) {
-          const lbl = labels?.[i] || '';
-          ctx.fillText(v.toFixed(1) + ' ק"ג', x - 18, y - 8);
-          if (lbl) ctx.fillText(lbl, x - 18, cssHeight - 8);
-        }
-      });
-
-      if (startLabel) ctx.fillText(startLabel, pad, cssHeight - 8);
-      if (endLabel) ctx.fillText(endLabel, cssWidth - pad - 40, cssHeight - 8);
-    }
-
-    function renderProjectionChart(currentWeight, goalWeight, days) {
-      const points = Math.min(12, Math.max(2, Math.ceil(days / 7)));
-      const values = [];
-      const labels = [];
-      for (let i = 0; i <= points; i++) {
-        const ratio = i / points;
-        values.push(currentWeight - ((currentWeight - goalWeight) * ratio));
-        labels.push(i === 0 ? 'היום' : `שלב ${i}`);
-      }
-      renderLineChart('progressChart', values, labels, 'התחלה', 'יעד');
-    }
-
-    function calc() {
-      const age = Number(document.getElementById('age').value);
-      const gender = document.getElementById('gender').value;
-      const height = Number(document.getElementById('height').value);
-      const weight = Number(document.getElementById('weight').value);
-      const goalWeight = Number(document.getElementById('goalWeight').value);
-      const targetDateValue = document.getElementById('targetDate').value;
-      const activity = Number(document.getElementById('activity').value);
-      const calPerKg = Number(document.getElementById('calPerKg').value);
-
-      const output = document.getElementById('output');
-      const warningBox = document.getElementById('warningBox');
-      const formulaBox = document.getElementById('formulaBox');
-      const notesBox = document.getElementById('notesBox');
-
-      warningBox.classList.add('hidden');
-      warningBox.innerHTML = '';
-
-      if (!age || !height || !weight || !goalWeight || !targetDateValue || !calPerKg) {
-        alert('צריך למלא את כל השדות.');
-        return;
-      }
-      if (goalWeight >= weight) {
-        alert('המחשבון הזה בנוי כרגע לירידה במשקל, לכן משקל המטרה צריך להיות נמוך מהמשקל הנוכחי.');
-        return;
-      }
-
-      const today = new Date();
-      const targetDate = new Date(targetDateValue);
-      const days = daysBetween(today, targetDate);
-      if (days <= 0) {
-        alert('צריך לבחור תאריך יעד עתידי.');
-        return;
-      }
-
-      const kgToLose = weight - goalWeight;
-      const totalDeficit = kgToLose * calPerKg;
-      const dailyDeficit = totalDeficit / days;
-      const bmr = calculateBMR({ gender, weight, height, age });
-      const tdee = bmr * activity;
-      let targetCalories = tdee - dailyDeficit;
-      const floor = safeFloor(gender, age);
-      const weeklyLoss = kgToLose / (days / 7);
-      const currentBMI = bmi(weight, height);
-      const goalBMI = bmi(goalWeight, height);
-
-      let statusText = '';
-
-      if (age < 18) {
-        statusText += '<p class="danger">לפי הגיל שהוזן, לא מוצג כאן יעד קלורי אגרסיבי לירידה. בגיל ההתבגרות עדיף לקבוע יעד עם איש מקצוע.</p>';
-        targetCalories = null;
-      } else if (floor && targetCalories < floor) {
-        statusText += `<p class="danger">היעד שיצא נמוך מסף זהירות מקובל של ${formatNumber(floor)} קלוריות ליום. לכן היעד הועלה אוטומטית לסף הזהירות.</p>`;
-        targetCalories = floor;
-      }
-
-      if (weeklyLoss > 1) {
-        statusText += '<p class="danger">קצב הירידה המבוקש מהיר יחסית. בדרך כלל עדיף יעד מתון יותר.</p>';
-      } else if (weeklyLoss >= 0.25 && weeklyLoss <= 1) {
-        statusText += '<p class="ok">קצב הירידה המבוקש נמצא בטווח מתון וסביר יחסית.</p>';
-      } else {
-        statusText += '<p>הקצב איטי יחסית. זה בסדר גמור אם המטרה היא ירידה יציבה ונוחה יותר.</p>';
-      }
-
-      document.getElementById('bmrOut').textContent = formatNumber(bmr);
-      document.getElementById('tdeeOut').textContent = formatNumber(tdee);
-      document.getElementById('targetOut').textContent = targetCalories ? formatNumber(targetCalories) : 'לא מוצג';
-
-      formulaBox.innerHTML = `
-        <strong>איך חישבנו:</strong>
-        <ul>
-          <li>BMR לפי Mifflin-St Jeor.</li>
-          <li>TDEE = BMR × מקדם פעילות.</li>
-          <li>משקל להורדה: <strong>${kgToLose.toFixed(1)}</strong> ק"ג.</li>
-          <li>סה"כ גירעון נדרש: <strong>${formatNumber(totalDeficit)}</strong> קלוריות.</li>
-          <li>מספר ימים עד היעד: <strong>${formatNumber(days)}</strong>.</li>
-          <li>גירעון יומי נדרש: <strong>${formatNumber(dailyDeficit)}</strong> קלוריות.</li>
-        </ul>
-      `;
-
-      notesBox.innerHTML = `
-        <strong>סיכום:</strong>
-        <ul>
-          <li>משקל נוכחי: <strong>${weight.toFixed(1)}</strong> ק"ג</li>
-          <li>משקל מטרה: <strong>${goalWeight.toFixed(1)}</strong> ק"ג</li>
-          <li>BMI נוכחי: <strong>${currentBMI.toFixed(1)}</strong></li>
-          <li>BMI ביעד: <strong>${goalBMI.toFixed(1)}</strong></li>
-          <li>קצב ירידה ממוצע נדרש: <strong>${weeklyLoss.toFixed(2)}</strong> ק"ג לשבוע</li>
-          <li>יעד קלורי יומי משוער: <strong>${targetCalories ? formatNumber(targetCalories) + ' קלוריות' : 'לא מוצג בגלל גיל מתחת ל-18'}</strong></li>
-        </ul>
-      `;
-
-      renderProjectionChart(weight, goalWeight, days);
-
-      if (statusText) {
-        warningBox.innerHTML = statusText;
-        warningBox.classList.remove('hidden');
-      }
-
-      output.classList.remove('hidden');
-      checkAlerts();
-    }
-
-    async function registerUser() {
-      if (!auth || !db) {
-        showBox('authMessage', 'קודם צריך להדביק את הגדרות Firebase בתוך הקובץ.', 'warning');
-        return;
-      }
-      const firstName = document.getElementById('firstName').value.trim();
-      const lastName = document.getElementById('lastName').value.trim();
-      const email = document.getElementById('registerEmail').value.trim();
-      const password = document.getElementById('registerPassword').value;
-
-      if (!firstName || !lastName || !email || !password) {
-        showBox('authMessage', 'צריך למלא שם פרטי, שם משפחה, אימייל וסיסמה.', 'warning');
-        return;
-      }
-
-      try {
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
-        await setDoc(doc(db, 'users', cred.user.uid), {
-          firstName,
-          lastName,
-          email,
-          createdAt: serverTimestamp(),
-          planner: {},
-          weightHistory: []
-        }, { merge: true });
-
-        showBox('authMessage', 'המשתמש נוצר בהצלחה.', 'banner');
-        await goToAppNow(cred.user);
-      } catch (err) {
-        showBox('authMessage', 'שגיאה בהרשמה: ' + err.message, 'warning');
-      }
-    }
-
-    async function loginUser() {
-      if (!auth) {
-        showBox('authMessage', 'קודם צריך להדביק את הגדרות Firebase בתוך הקובץ.', 'warning');
-        return;
-      }
-
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
-
-      if (!email || !password) {
-        showBox('authMessage', 'צריך למלא אימייל וסיסמה.', 'warning');
-        return;
-      }
-
-      try {
-        const cred = await signInWithEmailAndPassword(auth, email, password);
-        showBox('authMessage', 'התחברת בהצלחה.', 'banner');
-        await goToAppNow(cred.user);
-      } catch (err) {
-        showBox('authMessage', 'שגיאה בהתחברות: ' + err.message, 'warning');
-      }
-    }
-
-    async function logoutUser() {
-      if (!auth) return;
-      await signOut(auth);
-    }
-
-    async function sendReset() {
-      if (!auth) {
-        showBox('authMessage', 'קודם צריך להדביק את הגדרות Firebase בתוך הקובץ.', 'warning');
-        return;
-      }
-      const email = document.getElementById('loginEmail').value.trim() || document.getElementById('registerEmail').value.trim();
-      if (!email) {
-        showBox('authMessage', 'תכתוב אימייל כדי לשלוח איפוס סיסמה.', 'warning');
-        return;
-      }
-      try {
-        await sendPasswordResetEmail(auth, email);
-        showBox('authMessage', 'נשלח מייל לאיפוס סיסמה.', 'banner');
-      } catch (err) {
-        showBox('authMessage', 'שגיאה באיפוס סיסמה: ' + err.message, 'warning');
-      }
-    }
-
-    async function savePlannerToCloud() {
-      if (!db || !currentUser) {
-        showBox('cloudMessage', 'צריך להתחבר כדי לשמור לענן.', 'warning');
-        return;
-      }
-      try {
-        const planner = getPlannerDataFromForm();
-        await setDoc(doc(db, 'users', currentUser.uid), {
-          planner,
-          updatedAt: serverTimestamp()
-        }, { merge: true });
-        showBox('cloudMessage', 'הנתונים נשמרו לענן.', 'banner');
-        checkAlerts();
-      } catch (err) {
-        showBox('cloudMessage', 'שגיאה בשמירה לענן: ' + err.message, 'warning');
-      }
-    }
-
-    async function loadPlannerFromCloud() {
-      if (!db || !currentUser) {
-        showBox('cloudMessage', 'צריך להתחבר כדי לטעון מהענן.', 'warning');
-        return;
-      }
-      try {
-        const snap = await getDoc(doc(db, 'users', currentUser.uid));
-        if (!snap.exists()) {
-          showBox('cloudMessage', 'לא נמצאו נתונים בענן עדיין.', 'warning');
-          return;
-        }
-        const data = snap.data();
-        userProfile = data;
-        applyPlannerDataToForm(data.planner || {});
-        weightHistory = (data.weightHistory || []).sort((a,b) => (a.date > b.date ? 1 : -1));
-        renderWeightHistory();
-        showBox('cloudMessage', 'הנתונים נטענו מהענן.', 'banner');
-        checkAlerts();
-      } catch (err) {
-        showBox('cloudMessage', 'שגיאה בטעינה מהענן: ' + err.message, 'warning');
-      }
-    }
-
-    async function goToAppNow(user) {
-      currentUser = user;
-      try {
-        const snap = await getDoc(doc(db, 'users', user.uid));
-        const data = snap.exists() ? snap.data() : {};
-        userProfile = data;
-        weightHistory = (data.weightHistory || []).sort((a,b) => (a.date > b.date ? 1 : -1));
-        setLoggedInUI(data);
-        if (data.planner) applyPlannerDataToForm(data.planner);
-        renderWeightHistory();
-        checkAlerts();
-      } catch (err) {
-        setLoggedInUI();
-        showBox('cloudMessage', 'התחברת, אבל לא הצלחתי לקרוא את הנתונים מהענן: ' + err.message, 'warning');
-      }
-    }
-
-    function setLoggedInUI(profile = null) {
-      const authCard = document.getElementById('authCard');
-      const appCard = document.getElementById('appCard');
-      const historyCard = document.getElementById('historyCard');
-
-      authCard.classList.add('hidden');
-      authCard.style.display = 'none';
-
-      appCard.classList.remove('hidden');
-      appCard.style.display = 'block';
-
-      historyCard.classList.remove('hidden');
-      historyCard.style.display = 'block';
-
-      const fullName = profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : currentUser.email;
-      setUserPill(fullName || currentUser.email);
-      document.getElementById('weighDate').value = new Date().toISOString().slice(0,10);
-      if (!document.getElementById('weighWeight').value && document.getElementById('weight').value) {
-        document.getElementById('weighWeight').value = document.getElementById('weight').value;
-      }
-    }
-
-    function setLoggedOutUI() {
-      const authCard = document.getElementById('authCard');
-      const appCard = document.getElementById('appCard');
-      const historyCard = document.getElementById('historyCard');
-
-      authCard.classList.remove('hidden');
-      authCard.style.display = 'block';
-
-      appCard.classList.add('hidden');
-      appCard.style.display = 'none';
-
-      historyCard.classList.add('hidden');
-      historyCard.style.display = 'none';
-
-      setUserPill('');
-      hideBox('cloudMessage');
-      hideBox('appAlerts');
-      weightHistory = [];
-      userProfile = null;
-      document.getElementById('historyTableBody').innerHTML = '<tr><td colspan="5" class="small">עדיין אין נתונים.</td></tr>';
-      document.getElementById('historySummary').textContent = 'עדיין אין שקילות.';
-    }
-
-    async function addWeighIn() {
-      if (!db || !currentUser) {
-        showBox('cloudMessage', 'צריך להתחבר כדי להוסיף שקילה.', 'warning');
-        return;
-      }
-
-      const date = document.getElementById('weighDate').value;
-      const weight = Number(document.getElementById('weighWeight').value);
-      const note = document.getElementById('weighNote').value.trim();
-
-      if (!date || !weight) {
-        showBox('cloudMessage', 'צריך למלא תאריך ומשקל.', 'warning');
-        return;
-      }
-
-      const entry = {
-        id: `${date}_${weight}_${Date.now()}`,
-        date,
-        weight,
-        note
-      };
-
-      try {
-        await setDoc(doc(db, 'users', currentUser.uid), {
-          email: currentUser.email || '',
-          planner: getPlannerDataFromForm(),
-          weightHistory: arrayUnion(entry),
-          updatedAt: serverTimestamp()
-        }, { merge: true });
-
-        weightHistory.push(entry);
-        weightHistory.sort((a,b) => (a.date > b.date ? 1 : -1));
-        renderWeightHistory();
-        showBox('cloudMessage', 'השקילה נוספה ונשמרה בענן.', 'banner');
-        document.getElementById('weight').value = weight;
-        document.getElementById('weighNote').value = '';
-        calcIfPossible();
-        checkAlerts(true);
-      } catch (err) {
-        showBox('cloudMessage', 'שגיאה בהוספת שקילה: ' + err.message, 'warning');
-      }
-    }
-
-    async function deleteWeighIn(entryId) {
-      const entry = weightHistory.find(x => x.id === entryId);
-      if (!entry || !db || !currentUser) return;
-      try {
-        await updateDoc(doc(db, 'users', currentUser.uid), {
-          weightHistory: arrayRemove(entry),
-          updatedAt: serverTimestamp()
-        });
-        weightHistory = weightHistory.filter(x => x.id !== entryId);
-        renderWeightHistory();
-        showBox('cloudMessage', 'השקילה נמחקה.', 'banner');
-      } catch (err) {
-        showBox('cloudMessage', 'שגיאה במחיקת שקילה: ' + err.message, 'warning');
-      }
-    }
-
-    function renderWeightHistory() {
-      const body = document.getElementById('historyTableBody');
-      const summary = document.getElementById('historySummary');
-
-      if (!weightHistory.length) {
-        body.innerHTML = '<tr><td colspan="5" class="small">עדיין אין נתונים.</td></tr>';
-        summary.textContent = 'עדיין אין שקילות.';
-        renderLineChart('historyChart', [0], [''], '', '');
-        return;
-      }
-
-      let rows = '';
-      let prev = null;
-      weightHistory.forEach((entry) => {
-        let diffText = '<span class="pill pill-neutral">ראשון</span>';
-        if (prev) {
-          const diff = +(entry.weight - prev.weight).toFixed(1);
-          if (diff < 0) diffText = `<span class="pill pill-ok">${diff} ק"ג</span>`;
-          else if (diff > 0) diffText = `<span class="pill pill-warn">+${diff} ק"ג</span>`;
-          else diffText = `<span class="pill pill-neutral">0</span>`;
-        }
-        rows += `
-          <tr>
-            <td>${formatDateValue(entry.date)}</td>
-            <td>${entry.weight.toFixed(1)} ק"ג</td>
-            <td>${diffText}</td>
-            <td>${entry.note || '-'}</td>
-            <td><button class="danger-btn" data-delete-id="${entry.id}">מחק</button></td>
-          </tr>
-        `;
-        prev = entry;
-      });
-      body.innerHTML = rows;
-
-      const first = weightHistory[0];
-      const last = weightHistory[weightHistory.length - 1];
-      const totalDiff = +(last.weight - first.weight).toFixed(1);
-      const summaryText = `יש ${weightHistory.length} שקילות. השקילה הראשונה: ${first.weight.toFixed(1)} ק"ג בתאריך ${formatDateValue(first.date)}. השקילה האחרונה: ${last.weight.toFixed(1)} ק"ג בתאריך ${formatDateValue(last.date)}. שינוי כולל: ${totalDiff > 0 ? '+' : ''}${totalDiff} ק"ג.`;
-      summary.textContent = summaryText;
-
-      renderLineChart(
-        'historyChart',
-        weightHistory.map(x => x.weight),
-        weightHistory.map(x => formatDateValue(x.date)),
-        formatDateValue(first.date),
-        formatDateValue(last.date)
-      );
-
-      [...document.querySelectorAll('[data-delete-id]')].forEach((btn) => {
-        btn.addEventListener('click', () => deleteWeighIn(btn.getAttribute('data-delete-id')));
-      });
-    }
-
-    function calcIfPossible() {
-      const required = ['age','height','weight','goalWeight','targetDate','calPerKg'];
-      const ok = required.every(id => document.getElementById(id).value);
-      if (ok) calc();
-    }
-
-    async function enableNotifications() {
-      if (!('Notification' in window)) {
-        showBox('cloudMessage', 'הדפדפן הזה לא תומך בהתראות.', 'warning');
-        return;
-      }
-      const result = await Notification.requestPermission();
-      if (result === 'granted') {
-        showBox('cloudMessage', 'התראות הופעלו בדפדפן.', 'banner');
-        new Notification('Caloria', { body: 'התראות הופעלו בהצלחה.' });
-        checkAlerts(true);
-      } else {
-        showBox('cloudMessage', 'לא אושרו התראות בדפדפן.', 'warning');
-      }
-    }
-
-    function maybeNotify(title, body, key) {
-      if (!('Notification' in window) || Notification.permission !== 'granted') return;
-      const stampKey = 'notified_' + key;
-      const todayKey = new Date().toISOString().slice(0,10);
-      if (localStorage.getItem(stampKey) === todayKey) return;
-      new Notification(title, { body });
-      localStorage.setItem(stampKey, todayKey);
-    }
-
-    function checkAlerts(forceNotify = false) {
-      const alerts = [];
-      const targetDate = document.getElementById('targetDate').value;
-      const goalWeight = Number(document.getElementById('goalWeight').value);
-      const currentWeight = Number(document.getElementById('weight').value);
-
-      if (weightHistory.length) {
-        const lastDate = new Date(weightHistory[weightHistory.length - 1].date);
-        const daysSince = daysBetween(lastDate, new Date()) * -1;
-        if (daysSince >= 7) {
-          alerts.push('עברו לפחות 7 ימים מהשקילה האחרונה. כדאי להוסיף שקילה חדשה.');
-          if (forceNotify || Notification.permission === 'granted') {
-            maybeNotify('תזכורת שקילה', 'עברו לפחות 7 ימים מהשקילה האחרונה. כדאי לשקול ולהזין נתון חדש.', 'weigh_reminder');
-          }
-        }
-      }
-
-      if (targetDate) {
-        const daysLeft = daysBetween(new Date(), new Date(targetDate));
-        if (daysLeft >= 0 && daysLeft <= 7) {
-          alerts.push(`תאריך היעד קרוב - נשארו ${daysLeft} ימים.`);
-          if (forceNotify || Notification.permission === 'granted') {
-            maybeNotify('תאריך יעד מתקרב', `נשארו ${daysLeft} ימים לתאריך היעד שלך.`, 'target_date');
-          }
-        }
-      }
-
-      if (goalWeight && currentWeight && currentWeight <= goalWeight) {
-        alerts.push('כל הכבוד - הגעת למשקל היעד או ירדת מתחתיו.');
-        if (forceNotify || Notification.permission === 'granted') {
-          maybeNotify('הגעת ליעד', 'כל הכבוד, הגעת למשקל היעד שלך.', 'goal_reached');
-        }
-      }
-
-      if (!alerts.length) {
-        hideBox('appAlerts');
-        return;
-      }
-
-      showBox('appAlerts', `<strong>התראות:</strong><ul>${alerts.map(x => `<li>${x}</li>`).join('')}</ul>`, 'notes');
-    }
-
-    document.getElementById('registerBtn').addEventListener('click', registerUser);
-    document.getElementById('loginBtn').addEventListener('click', loginUser);
-    document.getElementById('logoutBtn').addEventListener('click', logoutUser);
-    document.getElementById('resetPasswordBtn').addEventListener('click', sendReset);
-    document.getElementById('cloudSaveBtn').addEventListener('click', savePlannerToCloud);
-    document.getElementById('cloudLoadBtn').addEventListener('click', loadPlannerFromCloud);
-    document.getElementById('calcBtn').addEventListener('click', calc);
-    document.getElementById('resetBtn').addEventListener('click', resetPlannerForm);
-    document.getElementById('addWeighBtn').addEventListener('click', addWeighIn);
-    document.getElementById('enableNotificationsBtn').addEventListener('click', enableNotifications);
-
-    setLoggedOutUI();
-
-    if (auth && db) {
-      onAuthStateChanged(auth, async (user) => {
-        if (!user) {
-          currentUser = null;
-          setLoggedOutUI();
-          return;
-        }
-        await goToAppNow(user);
-      });
-    }
-  </script>
+    setProgress(null);
+    persist(); render();
+  }
+}
+const numOrNull = v => (v==null||v===""||isNaN(Number(v))) ? null : Number(v);
+
+/* ---------- rendering ---------- */
+function filtered(){
+  return receipts.filter(r=>{
+    if(filterCat && r.category!==filterCat) return false;
+    if(searchText && !(r.vendor||"").toLowerCase().includes(searchText.toLowerCase())) return false;
+    return true;
+  });
+}
+function renderTally(){
+  const done = receipts.filter(r=>r.status!=="processing");
+  const sums={}; let vatTotal=0;
+  done.forEach(r=>{ const c=r.currency||'ILS'; if(r.total){ sums[c]=(sums[c]||0)+r.total; } if(r.vat&&c==='ILS') vatTotal+=r.vat; });
+  const currencies=Object.keys(sums);
+  const main=currencies[0]||'ILS';
+  document.getElementById('tally').innerHTML =
+    `<div class="row"><span>קבלות שנקלטו</span><span class="v">${receipts.length}</span></div>`+
+    `<div class="row"><span>סך מע״מ (₪)</span><span class="v">${vatTotal?vatTotal.toFixed(2):"0.00"}</span></div>`+
+    (currencies.slice(1).map(c=>`<div class="row"><span>סה״כ ${c}</span><span class="v">${money(sums[c],c)}</span></div>`).join(""))+
+    `<div class="grand"><span class="lbl">סך ההוצאות</span>`+
+    `<span class="amt">${money(sums[main]||0,main).replace(/[^\d.,\s]/g,'').trim()}<span class="cur">${main==='ILS'?'₪':main}</span></span></div>`;
+}
+function renderChips(){
+  const el=document.getElementById('chips');
+  el.innerHTML=`<span class="chip ${!filterCat?'on':''}" data-cat="">הכל</span>`+
+    CATEGORIES.map(c=>`<span class="chip ${filterCat===c?'on':''}" data-cat="${esc(c)}">${esc(c)}</span>`).join("");
+  el.querySelectorAll('.chip').forEach(ch=>ch.onclick=()=>{ filterCat=ch.dataset.cat||null; render(); });
+}
+function renderList(){
+  const area=document.getElementById('listArea'), items=filtered();
+  if(!receipts.length){
+    area.innerHTML=`<div class="list"><div class="empty"><div class="e-ico">📥</div><div class="e-t">עדיין אין קבלות</div><div>העלו קבלה ראשונה — ה-AI יסדר אותה כאן.</div></div></div>`;
+    return;
+  }
+  if(!items.length){
+    area.innerHTML=`<div class="list"><div class="empty"><div class="e-ico">🔍</div><div class="e-t">אין תוצאות</div></div></div>`;
+    return;
+  }
+  area.innerHTML=`<div class="list">${items.map(rowHTML).join("")}</div>`;
+  bindRows();
+}
+function rowHTML(r){
+  const isOpen=r.id===expandedId;
+  const thumb=r.thumb?`<img class="thumb" src="${r.thumb}" alt="">`:
+    `<div class="thumb ph">${r.status==="processing"?'<div class=spin></div>':'📄'}</div>`;
+  const head=`<div class="item-head" data-id="${r.id}">${thumb}
+    <div class="meta"><div class="v">${esc(r.vendor||'—')}</div>
+    <div class="d">${esc(r.date||'תאריך לא ידוע')}</div>
+    ${r.category?`<span class="cat">${esc(r.category)}</span>`:''}</div>
+    <div class="amt-col"><div class="t">${r.status==="processing"?'· · ·':money(r.total,r.currency)}</div>
+    ${r.vat?`<div class="vat">מע״מ ${r.vat.toFixed(2)}</div>`:''}</div></div>`;
+  let detail="";
+  if(isOpen) detail=(r.id===editingId)?editHTML(r):viewHTML(r);
+  return `<div class="item">${head}${detail}</div>`;
+}
+function viewHTML(r){
+  const line=(l,v)=>`<div class="fld"><label>${l}</label><div style="font-family:var(--mono);font-size:14px;padding:2px 0">${esc(v??'—')}</div></div>`;
+  return `<div class="detail"><div class="grid">
+    ${line('ספק',r.vendor)}${line('תאריך',r.date)}${line('קטגוריה',r.category)}${line('אמצעי תשלום',r.payment_method)}
+    ${line('לפני מע״מ',r.subtotal!=null?money(r.subtotal,r.currency):null)}${line('מע״מ',r.vat!=null?money(r.vat,r.currency):null)}
+    ${line('סה״כ',r.total!=null?money(r.total,r.currency):null)}${line('מטבע',r.currency)}
+    ${r._err?`<div class="fld" style="grid-column:1/-1"><label>שגיאה</label><div style="font-size:12px;color:var(--stamp)">${esc(r._err)}</div></div>`:''}
+  </div><div class="actions"><button class="btn btn-green btn-sm" data-edit="${r.id}">עריכה</button>
+  <button class="btn-ghost" data-del="${r.id}">מחיקה</button></div></div>`;
+}
+function editHTML(r){
+  const opt=CATEGORIES.map(c=>`<option ${c===r.category?'selected':''}>${esc(c)}</option>`).join("");
+  return `<div class="detail"><div class="grid">
+    <div class="fld"><label>ספק</label><input id="e_vendor" value="${esc(r.vendor)}"></div>
+    <div class="fld mono"><label>תאריך</label><input id="e_date" value="${esc(r.date||'')}"></div>
+    <div class="fld"><label>קטגוריה</label><select id="e_category">${opt}</select></div>
+    <div class="fld"><label>אמצעי תשלום</label><input id="e_pay" value="${esc(r.payment_method||'')}"></div>
+    <div class="fld mono"><label>לפני מע״מ</label><input id="e_sub" value="${r.subtotal??''}"></div>
+    <div class="fld mono"><label>מע״מ</label><input id="e_vat" value="${r.vat??''}"></div>
+    <div class="fld mono"><label>סה״כ</label><input id="e_total" value="${r.total??''}"></div>
+    <div class="fld mono"><label>מטבע</label><input id="e_cur" value="${esc(r.currency||'ILS')}"></div>
+  </div><div class="actions">
+    <button class="btn btn-green btn-sm" data-save="${r.id}">שמירה</button>
+    <button class="btn btn-sm" data-cancel="${r.id}">ביטול</button>
+  </div></div>`;
+}
+function bindRows(){
+  document.querySelectorAll('.item-head').forEach(h=>h.onclick=()=>{
+    const id=h.dataset.id; expandedId=(expandedId===id?null:id); editingId=null; render();
+  });
+  document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=e=>{e.stopPropagation();editingId=b.dataset.edit;render();});
+  document.querySelectorAll('[data-cancel]').forEach(b=>b.onclick=e=>{e.stopPropagation();editingId=null;render();});
+  document.querySelectorAll('[data-del]').forEach(b=>b.onclick=e=>{
+    e.stopPropagation();
+    receipts=receipts.filter(x=>x.id!==b.dataset.del);
+    expandedId=null; persist(); render(); toast("נמחק");
+  });
+  document.querySelectorAll('[data-save]').forEach(b=>b.onclick=e=>{
+    e.stopPropagation();
+    const r=receipts.find(x=>x.id===b.dataset.save); if(!r) return;
+    r.vendor=document.getElementById('e_vendor').value.trim()||r.vendor;
+    r.date=document.getElementById('e_date').value.trim()||null;
+    r.category=document.getElementById('e_category').value;
+    r.payment_method=document.getElementById('e_pay').value.trim()||null;
+    r.subtotal=numOrNull(document.getElementById('e_sub').value);
+    r.vat=numOrNull(document.getElementById('e_vat').value);
+    r.total=numOrNull(document.getElementById('e_total').value);
+    r.currency=document.getElementById('e_cur').value.trim()||'ILS';
+    r.status="done"; editingId=null; persist(); render(); toast("נשמר");
+  });
+}
+function render(){ renderTally(); renderChips(); renderList(); }
+
+/* ---------- CSV ---------- */
+function exportCSV(){
+  if(!receipts.length){ toast("אין קבלות לייצוא"); return; }
+  const head=["ספק","תאריך","קטגוריה","מטבע","לפני מעמ","מעמ","סהכ","אמצעי תשלום"];
+  const rows=receipts.map(r=>[r.vendor,r.date,r.category,r.currency,r.subtotal,r.vat,r.total,r.payment_method]
+    .map(v=>`"${(v??'').toString().replace(/"/g,'""')}"`).join(","));
+  const csv="\uFEFF"+head.join(",")+"\n"+rows.join("\n");
+  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"})),download:"pinkas.csv"});
+  a.click(); URL.revokeObjectURL(a.href); toast("יוצא ✓");
+}
+
+/* ---------- wiring ---------- */
+const drop=document.getElementById('drop'), fileInput=document.getElementById('file');
+drop.onclick=()=>fileInput.click();
+fileInput.onchange=e=>{ if(e.target.files.length){ handleFiles([...e.target.files]); fileInput.value=""; } };
+['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag');}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag');}));
+drop.addEventListener('drop',e=>{ if(e.dataTransfer.files.length) handleFiles([...e.dataTransfer.files]); });
+document.getElementById('search').oninput=e=>{ searchText=e.target.value; renderList(); };
+document.getElementById('exportBtn').onclick=exportCSV;
+
+/* ---------- init ---------- */
+receipts = loadData();
+loadKey();
+render();
+</script>
 </body>
 </html>
